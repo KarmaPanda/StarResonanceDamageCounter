@@ -1,30 +1,30 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>星痕共鸣实时战斗数据</title>
+        <title>Blue Protocol: Star Resonance Real-Time Combat Data</title>
         <script src="echarts.min.js"></script>
         <script src="socket.io.min.js"></script>
         <link rel="stylesheet" type="text/css" href="css/style.css" />
     </head>
 
     <body>
-        <h1 id="appTitle">🎯 星痕共鸣实时战斗数据展示</h1>
+        <h1 id="appTitle">🎯 Blue Protocol: Star Resonance Real-Time Combat Data</h1>
         <div style="margin: 20px 0"></div>
-        <button class="main-button" onclick="clearData()">🗑️ 清空数据</button>
-        <button class="main-button" id="pauseButton" onclick="togglePause()">⏸️ 暂停统计</button>
-        <button class="main-button" onclick="openHpWindow()">❤️ 血条监控</button>
-        <button class="main-button" onclick="toggleHistoryModal()">📜 历史数据</button>
-        <button class="main-button" onclick="toggleDarkMode()">🌙 夜间模式</button>
-        <button class="main-button" onclick="toggleSimpleMode()">📋 简洁模式</button>
-        <button class="main-button" onclick="toggleControlsModal()">👤 用户管理</button>
-        <button class="main-button" onclick="toggleSettingsModal()">⚙️ 统计设置</button>
+        <button class="main-button" onclick="clearData()">🗑️ Clear Data</button>
+        <button class="main-button" id="pauseButton" onclick="togglePause()">⏸️ Pause</button>
+        <button class="main-button" onclick="openHpWindow()">❤️ HP Monitor</button>
+        <button class="main-button" onclick="toggleHistoryModal()">📜 History Data</button>
+        <button class="main-button" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+        <button class="main-button" onclick="toggleSimpleMode()">📋 Detailed Mode</button>
+        <button class="main-button" onclick="toggleControlsModal()">👤 User Management</button>
+        <button class="main-button" onclick="toggleSettingsModal()">⚙️ Statistics Settings</button>
 
-        <!-- 历史数据弹窗 -->
+        <!-- History Data Modal -->
         <div id="historyModal" class="modal">
             <div class="modal-content" style="width: 95vw; max-width: 95vw; max-height: 95vh; margin: 1% auto">
                 <div class="modal-header">
-                    <h2 class="modal-title">📜 历史数据</h2>
+                    <h2 class="modal-title">📜 History Data</h2>
                     <span class="close-button" onclick="toggleHistoryModal()">&times;</span>
                 </div>
                 <div class="modal-body" style="padding: 0px">
@@ -33,88 +33,88 @@
             </div>
         </div>
 
-        <!-- 控制面板弹窗 -->
+        <!-- Control Panel Modal -->
         <div id="controlsModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="modal-title">👤 用户控制面板</h2>
+                    <h2 class="modal-title">👤 User Control Panel</h2>
                     <span class="close-button" onclick="toggleControlsModal()">&times;</span>
                 </div>
                 <div class="modal-body">
                     <div style="margin-bottom: 15px; text-align: center">
-                        <button onclick="toggleAllUsers()">🔄 全选/取消全选</button>
-                        <button onclick="clearNicknames()">🗑️ 清空所有昵称</button>
+                        <button onclick="toggleAllUsers()">🔄 Select All/Deselect All</button>
+                        <button onclick="clearNicknames()">🗑️ Clear All Nicknames</button>
                     </div>
                     <div
                         id="userControlsList"
                         style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-height: 400px; overflow-y: auto"
                     >
-                        <!-- 用户控制项将在这里动态生成 -->
+                        <!-- User control items will be dynamically generated here -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 设置弹窗 -->
+        <!-- Settings Modal -->
         <div id="settingsModal" class="modal">
             <div class="modal-content" style="width: 400px; max-width: 95vw; margin: 5% auto">
                 <div class="modal-header">
-                    <h2 class="modal-title">⚙️ 统计设置</h2>
+                    <h2 class="modal-title">⚙️ Statistics Settings</h2>
                     <span class="close-button" onclick="toggleSettingsModal()">&times;</span>
                 </div>
                 <div class="modal-body">
                     <form id="settingsForm">
-                        <label><input type="checkbox" id="settingAutoClearOnServerChange" /> 切图切线后自动分段数据</label><br />
-                        <label><input type="checkbox" id="settingAutoClearOnTimeout" /> 15秒未战斗自动分段数据</label><br />
-                        <label><input type="checkbox" id="settingOnlyRecordEliteDummy" /> 只记录协会精英木桩数据</label><br />
-                        <button type="button" onclick="saveSettings()" style="margin-top: 15px">保存设置</button>
+                        <label><input type="checkbox" id="settingAutoClearOnServerChange" /> Auto clear data when changing maps/servers</label><br />
+                        <label><input type="checkbox" id="settingAutoClearOnTimeout" /> Auto clear data after 15 seconds of no combat</label><br />
+                        <label><input type="checkbox" id="settingOnlyRecordEliteDummy" /> Only record data for Elite Mobs</label><br />
+                        <button type="button" onclick="saveSettings()" style="margin-top: 15px">Save Settings</button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- 技能统计弹窗 -->
+        <!-- Skill Statistics Modal -->
         <div id="skillModal" class="skill-modal">
             <div class="skill-modal-content">
                 <div class="skill-modal-header">
                     <h2 class="skill-modal-title">
                         <i class="icon">📊</i>
-                        <span id="skillUserName">技能参与统计</span>
+                        <span id="skillUserName">Skill Participation Statistics</span>
                     </h2>
                     <span class="skill-modal-close" onclick="closeSkillModal()">&times;</span>
                 </div>
                 <div class="skill-modal-body">
                     <div class="skill-user-info">
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">用户ID</div>
+                            <div class="skill-user-info-label">User ID</div>
                             <div class="skill-user-info-value" id="skillUserId">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">角色昵称</div>
+                            <div class="skill-user-info-label">Character Nickname</div>
                             <div class="skill-user-info-value" id="skillUserNickname">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">职业</div>
+                            <div class="skill-user-info-label">Class & Spec</div>
                             <div class="skill-user-info-value" id="skillUserProfession">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">战力评分</div>
+                            <div class="skill-user-info-label">Combat Power</div>
                             <div class="skill-user-info-value" id="fightPoint">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">最大HP</div>
+                            <div class="skill-user-info-label">Max HP</div>
                             <div class="skill-user-info-value" id="maxHp">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">技能数量</div>
+                            <div class="skill-user-info-label">Skill Count</div>
                             <div class="skill-user-info-value" id="skillCount">-</div>
                         </div>
                     </div>
 
                     <div class="skill-view-toggle">
                         <div class="skill-view-toggle-buttons">
-                            <button class="skill-view-btn active" data-view="damage" onclick="switchSkillView('damage')">伤害技能</button>
-                            <button class="skill-view-btn" data-view="healing" onclick="switchSkillView('healing')">治疗技能</button>
+                            <button class="skill-view-btn active" data-view="damage" onclick="switchSkillView('damage')">Damage Skills</button>
+                            <button class="skill-view-btn" data-view="healing" onclick="switchSkillView('healing')">Healing Skills</button>
                         </div>
                     </div>
 
@@ -127,15 +127,15 @@
                         <table class="skill-table" id="skillTable">
                             <thead>
                                 <tr>
-                                    <th>技能名称</th>
-                                    <th>元素</th>
-                                    <th>占比</th>
-                                    <th>总数值</th>
-                                    <th>次数</th>
-                                    <th>暴击率</th>
-                                    <th>幸运触发率</th>
-                                    <th>暴击数值</th>
-                                    <th>普通数值</th>
+                                    <th>Skill Name</th>
+                                    <th>Element</th>
+                                    <th>Percentage</th>
+                                    <th>Total DMG</th>
+                                    <th>Hit Count</th>
+                                    <th>Crit Rate</th>
+                                    <th>Lucky Strike Rate</th>
+                                    <th>Crit DMG</th>
+                                    <th>Normal DMG</th>
                                 </tr>
                             </thead>
                             <tbody id="skillTableBody"></tbody>
@@ -145,44 +145,44 @@
             </div>
         </div>
 
-        <!-- 版本更新弹窗 -->
+        <!-- Version Update Modal -->
         <div id="updateModal" class="update-modal">
             <div class="update-modal-content">
                 <div class="update-modal-header">
-                    <h2 class="update-modal-title">🚀 发现新版本</h2>
+                    <h2 class="update-modal-title">🚀 New Version Found</h2>
                     <button class="update-modal-close" onclick="closeUpdateModal()">&times;</button>
                 </div>
                 <div class="update-modal-body">
-                    <p>检测到有新版本可用，建议及时更新以获得最佳使用体验！</p>
+                    <p>A new version is available. We recommend updating promptly for the best user experience!</p>
 
                     <div class="version-info">
                         <div class="current-version">
-                            <span>当前版本</span>
+                            <span>Current Version</span>
                             <span id="currentVersionText">---</span>
                         </div>
                         <div class="latest-version">
-                            <span>最新版本</span>
+                            <span>Latest Version</span>
                             <span id="latestVersionText">---</span>
                         </div>
                     </div>
 
                     <div class="update-buttons">
-                        <a id="downloadLink" href="#" target="_blank" class="update-btn update-btn-primary"> 📥 前往下载 </a>
-                        <button onclick="closeUpdateModal()" class="update-btn update-btn-secondary">⏭️ 稍后提醒</button>
+                        <a id="downloadLink" href="#" target="_blank" class="update-btn update-btn-primary"> 📥 Go to Download </a>
+                        <button onclick="closeUpdateModal()" class="update-btn update-btn-secondary">⏭️ Remind Later</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 服务器状态提示 -->
+        <!-- Server Status Indicator -->
         <div id="serverStatus" class="server-status">
-            <span id="serverStatusText">连接中...</span>
+            <span id="serverStatusText">Connecting...</span>
         </div>
 
-        <!-- DPS折线图 -->
+        <!-- DPS Line Chart -->
         <div class="chart-container">
             <h3 style="margin-top: 0; display: flex; justify-content: space-between; align-items: center">
-                📈 DPS趋势
+                📈 DPS Trend
                 <div style="display: flex; align-items: center; gap: 10px">
                     <span id="chartStatus" style="font-size: 12px; color: #666; font-weight: normal"></span>
                     <button
@@ -220,68 +220,86 @@
 
         <div class="card">
             <div style="margin: 20px 0">
-                <label for="sortSelect" style="margin-right: 10px; font-weight: bold">排序方式:</label>
+                <label for="sortSelect" style="margin-right: 10px; font-weight: bold">Sort By:</label>
                 <select
                     id="sortSelect"
                     onchange="updateSortMode()"
                     style="padding: 8px 12px; font-size: 14px; border-radius: 5px; border: 1px solid #ddd; background-color: white"
                 >
-                    <option value="uid">按UID排序 (升序)</option>
-                    <option value="fightPoint">按评分排序 (降序)</option>
-                    <option value="takenDamage">按承伤排序 (降序)</option>
-                    <option value="damage">按总伤害排序 (降序)</option>
-                    <option value="dps">按总DPS排序 (降序)</option>
-                    <option value="realtimeDpsMax">按最大瞬时DPS排序 (降序)</option>
-                    <option value="healing">按总治疗排序 (降序)</option>
-                    <option value="hps">按总HPS排序 (降序)</option>
-                    <option value="realtimeHpsMax">按最大瞬时HPS排序 (降序)</option>
-                    <option value="hp_min">按剩余HP排序 (升序)</option>
+                    <option value="uid">Sort by UID (Ascending)</option>
+                    <option value="fightPoint">Sort by Combat Power (Descending)</option>
+                    <option value="takenDamage">Sort by Damage Taken (Descending)</option>
+                    <option value="damage">Sort by Total Damage (Descending)</option>
+                    <option value="dps">Sort by Total DPS (Descending)</option>
+                    <option value="realtimeDpsMax">Sort by Max Instant DPS (Descending)</option>
+                    <option value="healing">Sort by Total Healing (Descending)</option>
+                    <option value="hps">Sort by Total HPS (Descending)</option>
+                    <option value="realtimeHpsMax">Sort by Max Instant HPS (Descending)</option>
+                    <option value="hp_min">Sort by Remaining HP (Ascending)</option>
                 </select>
             </div>
-            <!-- 数据组显示控制 -->
+            <!-- Data Group Display Control -->
             <div class="data-group-controls">
-                <button id="damageGroupBtn" class="data-group-button active" onclick="toggleDataGroup('damage')">⚔️ 伤害&DPS</button>
-                <button id="healingGroupBtn" class="data-group-button" onclick="toggleDataGroup('healing')">❤️ 治疗&HPS</button>
-                <button id="allGroupBtn" class="data-group-button" onclick="toggleDataGroup('all')">📊 全部数据</button>
-                <button id="hideInactiveBtn" class="data-group-button" onclick="toggleHideInactiveUsers()">👀 隐藏未参战</button>
-                <button class="data-group-button" onclick="openColumnSettings()">⚙️ 表格设置</button>
+                <button id="damageGroupBtn" class="data-group-button active" onclick="toggleDataGroup('damage')">⚔️ Damage&DPS</button>
+                <button id="healingGroupBtn" class="data-group-button" onclick="toggleDataGroup('healing')">❤️ Healing&HPS</button>
+                <button id="allGroupBtn" class="data-group-button" onclick="toggleDataGroup('all')">📊 All Data</button>
+                <button id="hideInactiveBtn" class="data-group-button" onclick="toggleHideInactiveUsers()">👀 Hide Inactive</button>
+                <button class="data-group-button" onclick="openColumnSettings()">⚙️ Table Settings</button>
             </div>
             <div class="table-container">
                 <table id="damageTable">
                     <thead>
                         <tr>
-                            <th rowspan="2" title="角色唯一标识符">角色ID</th>
-                            <th rowspan="2" title="角色昵称/自定义昵称">角色昵称</th>
-                            <th rowspan="2" title="角色职业">职业</th>
-                            <th rowspan="2" title="角色评分">评分</th>
-                            <th rowspan="2" title="角色血量">HP</th>
-                            <th rowspan="2" title="角色在战斗中受到的伤害">承伤</th>
-                            <th rowspan="2" title="角色在战斗中死亡次数">死亡</th>
-                            <th rowspan="2" title="角色在战斗中的暴击伤害次数占总伤害次数的比例">暴击率</th>
-                            <th rowspan="2" title="角色在战斗中的幸运伤害次数占总伤害次数的比例">幸运率</th>
-                            <th class="damage-main-col" colspan="4">伤害</th>
-                            <th class="damage-simple-col" style="display: none" colspan="1">伤害</th>
+                            <th rowspan="2" title="Character unique identifier">ID</th>
+                            <th rowspan="2" title="Character nickname/custom nickname">Name</th>
+                            <th rowspan="2" title="Character profession">Class & Spec</th>
+                            <th rowspan="2" title="Character rating">Ability Score</th>
+                            <th rowspan="2" title="Character health">HP</th>
+                            <th rowspan="2" title="Damage taken by character in combat">Damage Taken</th>
+                            <th rowspan="2" title="Number of deaths in combat">Deaths</th>
+                            <th rowspan="2" title="Ratio of critical damage hits to total damage hits">Critical Rate</th>
+                            <th rowspan="2" title="Ratio of lucky damage hits to total damage hits">Lucky Strike Rate</th>
+                            <th class="damage-main-col" colspan="4">Damage</th>
+                            <th class="damage-simple-col" style="display: none" colspan="1">Damage</th>
                             <th class="dps-col" colspan="3">DPS</th>
-                            <th class="healing-main-col" colspan="4">治疗</th>
-                            <th class="healing-simple-col" style="display: none" colspan="1">治疗</th>
+                            <th class="healing-main-col" colspan="4">Healing</th>
+                            <th class="healing-simple-col" style="display: none" colspan="1">Healing</th>
                             <th class="hps-col" colspan="3">HPS</th>
-                            <th rowspan="2">操作</th>
+                            <th rowspan="2">Actions</th>
                         </tr>
                         <tr>
-                            <th class="damage-cols" title="角色在战斗中造成的总伤害">总伤害</th>
-                            <th class="damage-detail-cols" title="角色在战斗中造成的非幸运的暴击伤害">纯暴击</th>
-                            <th class="damage-detail-cols" title="角色在战斗中造成的非暴击的幸运伤害">纯幸运</th>
-                            <th class="damage-detail-cols" title="角色在战斗中造成的暴击的幸运伤害">暴击幸运</th>
-                            <th class="dps-cols" title="角色在战斗中的最近一秒造成的伤害">瞬时DPS</th>
-                            <th class="dps-cols" title="角色在战斗中的最大瞬时DPS">最大瞬时</th>
-                            <th class="dps-cols" title="角色在战斗中的总DPS（以第一次技能与最后一次技能之间的时间作为有效战斗时间计算）">总DPS</th>
-                            <th class="healing-cols" title="角色在战斗中造成的总治疗量">总治疗</th>
-                            <th class="healing-detail-cols" title="角色在战斗中造成的非幸运的暴击治疗量">纯暴击</th>
-                            <th class="healing-detail-cols" title="角色在战斗中造成的非暴击的幸运治疗量">纯幸运</th>
-                            <th class="healing-detail-cols" title="角色在战斗中造成的暴击的幸运治疗量">暴击幸运</th>
-                            <th class="hps-cols" title="角色在战斗中的最近一秒造成的伤害和治疗量">瞬时HPS</th>
-                            <th class="hps-cols" title="角色在战斗中的最大瞬时HPS">最大瞬时</th>
-                            <th class="hps-cols" title="角色在战斗中的总HPS（以第一次技能与最后一次技能之间的时间作为有效战斗时间计算）">总HPS</th>
+                            <th class="damage-cols" title="Total damage dealt by character in combat">Total Damage</th>
+                            <th class="damage-detail-cols" title="Non-lucky critical damage dealt by character in combat">Total Critical Only</th>
+                            <th class="damage-detail-cols" title="Non-critical lucky damage dealt by character in combat">Total Lucky Strike Only</th>
+                            <th class="damage-detail-cols" title="Critical lucky damage dealt by character in combat">
+                                Total Critical & Lucky Strike Only
+                            </th>
+                            <th class="dps-cols" title="Damage dealt by character in the last second of combat">Current DPS</th>
+                            <th class="dps-cols" title="Maximum instant DPS of character in combat">Max Current DPS</th>
+                            <th
+                                class="dps-cols"
+                                title="Total DPS of character in combat (calculated based on effective combat time between first and last skill)"
+                            >
+                                Total DPS
+                            </th>
+                            <th class="healing-cols" title="Total healing done by character in combat">Total Healing</th>
+                            <th class="healing-detail-cols" title="Non-lucky critical healing done by character in combat">
+                                Total Critical Healing Only
+                            </th>
+                            <th class="healing-detail-cols" title="Non-critical lucky healing done by character in combat">
+                                Total Lucky Healing Only
+                            </th>
+                            <th class="healing-detail-cols" title="Critical lucky healing done by character in combat">
+                                Total Critical & Lucky Strike Only
+                            </th>
+                            <th class="hps-cols" title="Damage and healing done by character in the last second of combat">Current HPS</th>
+                            <th class="hps-cols" title="Maximum instant HPS of character in combat">Max Current HPS</th>
+                            <th
+                                class="hps-cols"
+                                title="Total HPS of character in combat (calculated based on effective combat time between first and last skill)"
+                            >
+                                Total HPS
+                            </th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -291,44 +309,45 @@
 
         <div class="card" id="enemyCard">
             <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px">
-                🛡️ 怪物血条
+                🛡️ Monster Health Bar
                 <span id="enemySummary" class="enemy-summary"></span>
             </h3>
             <div id="enemyList" class="enemy-list">
-                <div class="enemy-empty">暂未发现敌方目标</div>
+                <div class="enemy-empty">No enemy targets detected</div>
             </div>
         </div>
 
         <footer style="margin-top: 40px; font-size: 14px; color: #888">
             <span>© 2025 Made with ❤️ by </span>
             <a href="https://github.com/dmlgzs/" target="_blank">Dimole</a>
-            <span> and </span>
-            <a href="https://github.com/dmlgzs/StarResonanceDamageCounter/graphs/contributors" target="_blank">Other Contributors</a>
+            <span> | Forked and translated by <a href="https://github.com/KarmaPanda/" target="_blank">KarmaPanda</a></span>
             <span> | </span>
-            <a href="https://github.com/dmlgzs/StarResonanceDamageCounter" target="_blank">GitHub</a>
+            <a href="https://github.com/KarmaPanda/StarResonanceDamageCounter/graphs/contributors" target="_blank">Other Contributors</a>
+            <span> | </span>
+            <a href="https://github.com/KarmaPanda/StarResonanceDamageCounter" target="_blank">GitHub</a>
         </footer>
 
         <script>
-            let currentSortMode = 'uid'; // 默认按UID排序
+            let currentSortMode = 'uid'; // Default sort by UID
             let userNicknames = JSON.parse(localStorage.getItem('userNicknames') || '{}');
             let visibleUsers = JSON.parse(localStorage.getItem('visibleUsers') || '{}');
-            let dpsHistory = {}; // 存储每个用户的DPS历史数据
+            let dpsHistory = {}; // Store DPS history data for each user
             let chart = null;
-            const HISTORY_DURATION_SECONDS = 60; // 历史记录时长（秒）
-            const HISTORY_FREQUENCY_PER_SECOND = 10; // 每秒记录次数
-            const MAX_HISTORY_LENGTH = HISTORY_DURATION_SECONDS * HISTORY_FREQUENCY_PER_SECOND; // 60秒 * 10次/秒
-            let chartDatasetMap = {}; // 缓存数据集索引，避免重建
+            const HISTORY_DURATION_SECONDS = 60; // History record duration (seconds)
+            const HISTORY_FREQUENCY_PER_SECOND = 10; // Records per second
+            const MAX_HISTORY_LENGTH = HISTORY_DURATION_SECONDS * HISTORY_FREQUENCY_PER_SECOND; // 60 seconds * 10 times/second
+            let chartDatasetMap = {}; // Cache dataset indexes to avoid rebuilding
             let lastUpdateTime = 0;
-            let chartInitialized = false; // 标记图表是否已初始化
-            let userColorMap = {}; // 用户固定颜色映射
-            let isUpdatingFromLegend = false; // 防止图例事件和控制面板事件相互触发
-            let currentUserArray = []; // 缓存当前用户数组用于查找用户名
+            let chartInitialized = false; // Mark whether chart is initialized
+            let userColorMap = {}; // Fixed color mapping for users
+            let isUpdatingFromLegend = false; // Prevent legend events and control panel events from triggering each other
+            let currentUserArray = []; // Cache current user array for username lookup
             let lastEnemySignature = '';
 
-            // y轴动态调整相关变量
+            // Y-axis dynamic adjustment related variables
             const Y_AXIS_FLOOR_MIN = 10000;
 
-            // WebSocket连接相关变量
+            // WebSocket connection related variables
             let socket = null;
             let isWebSocketConnected = false;
             let lastWebSocketMessage = Date.now();
@@ -336,40 +355,40 @@
             let fallbackToAPI = false;
             let apiInterval = null;
 
-            // 暂停统计相关变量
+            // Statistics pause related variables
             let isPaused = false;
 
-            // 服务器状态提示相关变量
+            // Server status prompt related variables
             let serverStatusTimeout = null;
 
-            // 数据组显示控制相关变量
+            // Data group display control related variables
             let currentDataGroup = 'damage';
             let lastVisiableUserArray = [];
 
-            // 隐藏未参战角色相关变量
+            // Hide inactive character related variables
             let hideInactiveUsers = false;
 
-            // 新增技能分析功能
+            // Added skill analysis functionality
             let skillChart1 = null;
             let skillChart2 = null;
             let currentSkillUserId = 0;
             let currentSkillData = null;
             let currentSkillView = 'damage';
             const SKILL_VIEW_LABELS = {
-                damage: '伤害',
-                healing: '治疗',
+                damage: 'Damage',
+                healing: 'Healing',
             };
             let skillChartsResizeListenerRegistered = false;
 
-            // 图表显示/隐藏控制相关变量
+            // Chart show/hide control related variables
             let isChartVisible = true;
 
-            // 版本检查相关变量
+            // Version check related variables
             const CURRENT_VERSION = '3.3.1';
             const GITHUB_REPO = 'dmlgzs/StarResonanceDamageCounter';
             const UPDATE_CHECK_INTERVAL = 4 * 60 * 60 * 1000;
 
-            // 从series数据中提取可见最大值
+            // Extract visible maximum value from series data
             function getVisibleMaxFromSeries(seriesArray) {
                 let m = 0;
                 for (const series of seriesArray) {
@@ -382,7 +401,7 @@
                 return m;
             }
 
-            // 将数值向上取整到好读的档位
+            // Round values up to readable scale levels
             function niceCeil(val) {
                 if (val <= 0) return 1000;
                 const exp = Math.pow(10, Math.floor(Math.log10(val)));
@@ -394,28 +413,28 @@
                 return Math.ceil(val / exp) * exp;
             }
 
-            // 复制用户数据
+            // Copy user data
             function copyUserData(userId) {
                 const user = getUserFromArray(userId);
                 if (!user) {
-                    console.error('未找到用户数据');
+                    console.error('User data not found');
                     return;
                 }
 
                 const hasValidName = user.name && user.name.trim() !== '';
                 const nickname = userNicknames[userId] || (hasValidName ? user.name : '') || '';
-                const copyText = `${nickname}#${userId} 伤害:${user.total_damage.total} 治疗:${user.total_healing.total} DPS:${user.total_dps.toFixed(2)} HPS:${user.total_hps.toFixed(2)}`;
+                const copyText = `${nickname}#${userId} Damage:${user.total_damage.total} Healing:${user.total_healing.total} DPS:${user.total_dps.toFixed(2)} HPS:${user.total_hps.toFixed(2)}`;
 
-                // 复制昵称到剪贴板
+                // Copy nickname to clipboard
                 navigator.clipboard
                     .writeText(copyText)
                     .then(() => {
-                        // 显示复制成功提示
+                        // Show copy success notification
                         showCopySuccess();
                     })
                     .catch((err) => {
-                        console.error('复制失败:', err);
-                        // 降级方案：使用传统方法复制
+                        console.error('Copy failed:', err);
+                        // Fallback: use traditional copy method
                         try {
                             const textArea = document.createElement('textarea');
                             textArea.value = copyText;
@@ -425,14 +444,14 @@
                             document.body.removeChild(textArea);
                             showCopySuccess();
                         } catch (e) {
-                            console.error('降级复制方案也失败:', e);
+                            console.error('Fallback copy method also failed:', e);
                         }
                     });
             }
 
-            // 显示复制成功提示
+            // Show copy success notification
             function showCopySuccess() {
-                // 创建临时提示元素
+                // Create temporary notification element
                 const toast = document.createElement('div');
                 toast.style.cssText = `
                 position: fixed;
@@ -447,10 +466,10 @@
                 box-shadow: 0 2px 8px rgba(0,0,0,0.2);
                 animation: slideIn 0.3s ease-out;
             `;
-                toast.textContent = '✅ 已复制用户数据';
+                toast.textContent = '✅ User data copied';
                 document.body.appendChild(toast);
 
-                // 3秒后移除提示
+                // Remove notification after 3 seconds
                 setTimeout(() => {
                     if (toast.parentNode) {
                         toast.parentNode.removeChild(toast);
@@ -458,7 +477,7 @@
                 }, 3000);
             }
 
-            // 显示技能分析弹窗
+            // Show skill analysis modal
             async function showSkillAnalysis(userId) {
                 currentSkillUserId = userId;
                 currentSkillView = 'damage';
@@ -468,17 +487,17 @@
                 const modal = document.getElementById('skillModal');
                 modal.style.display = 'block';
 
-                // 获取技能数据
+                // Get skill data
                 await fetchSkillData(userId);
             }
 
-            // 关闭技能弹窗
+            // Close skill modal
             function closeSkillModal() {
                 const modal = document.getElementById('skillModal');
                 modal.style.display = 'none';
                 currentSkillData = null;
 
-                // 销毁图表实例
+                // Destroy chart instance
                 if (skillChart1) {
                     skillChart1.dispose();
                     skillChart1 = null;
@@ -489,7 +508,7 @@
                 }
             }
 
-            // 版本检查相关函数
+            // Version check related functions
             async function checkForUpdates() {
                 const now = Date.now();
                 const lastCheck = localStorage.getItem('lastUpdateCheck');
@@ -499,9 +518,9 @@
                 }
 
                 try {
-                    console.log('检查版本更新...');
+                    console.log('Checking for version updates...');
 
-                    // 从GitHub API获取最新release信息
+                    // Get latest release info from GitHub API
                     const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {
                         headers: {
                             Accept: 'application/vnd.github.v3+json',
@@ -515,18 +534,18 @@
                     const data = await response.json();
                     const latestVersion = data.tag_name;
 
-                    console.log(`当前版本: ${CURRENT_VERSION}, 最新版本: ${latestVersion}`);
+                    console.log(`Current version: ${CURRENT_VERSION}, Latest version: ${latestVersion}`);
 
                     localStorage.setItem('lastUpdateCheck', now.toString());
 
                     if (isNewerVersion(latestVersion, CURRENT_VERSION)) {
-                        console.log('发现新版本！');
+                        console.log('New version found!');
                         showUpdateModal(latestVersion, data.html_url);
                     } else {
-                        console.log('当前已是最新版本');
+                        console.log('Already on latest version');
                     }
                 } catch (error) {
-                    console.warn('检查版本更新失败:', error);
+                    console.warn('Version check failed:', error);
                 }
             }
 
@@ -536,7 +555,7 @@
                 return latestClean !== currentClean;
             }
 
-            // 显示版本更新弹窗
+            // Show version update modal
             function showUpdateModal(latestVersion, downloadUrl) {
                 const modal = document.getElementById('updateModal');
                 const currentVersionElement = document.getElementById('currentVersionText');
@@ -557,14 +576,14 @@
                 };
             }
 
-            // 关闭版本更新弹窗
+            // Close version update modal
             function closeUpdateModal() {
                 const modal = document.getElementById('updateModal');
                 modal.style.display = 'none';
                 modal.onclick = null;
             }
 
-            // 设置弹窗相关逻辑
+            // Settings modal related logic
             function toggleSettingsModal() {
                 const modal = document.getElementById('settingsModal');
                 modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
@@ -579,7 +598,7 @@
                             }
                         })
                         .catch((error) => {
-                            console.error('获取设置失败:', error);
+                            console.error('Failed to get settings:', error);
                             document.getElementById('settingAutoClearOnServerChange').checked = true;
                             document.getElementById('settingAutoClearOnTimeout').checked = false;
                             document.getElementById('settingOnlyRecordEliteDummy').checked = false;
@@ -606,7 +625,7 @@
                     });
             }
 
-            // 获取技能数据
+            // Get skill data
             async function fetchSkillData(userId) {
                 try {
                     const response = await fetch(`/api/skill/${userId}`);
@@ -615,24 +634,24 @@
                     if (data.code === 0) {
                         renderSkillData(data.data);
                     } else {
-                        console.error('获取技能数据失败:', data.msg);
+                        console.error('Failed to get skill data:', data.msg);
                     }
                 } catch (error) {
-                    console.error('获取技能数据失败:', error);
+                    console.error('Failed to get skill data:', error);
                 }
             }
 
-            // 渲染技能数据
+            // Render skill data
             function renderSkillData(skillData) {
                 const userInfo = getUserFromArray(skillData.uid);
 
-                // 更新用户信息
+                // Update user information
                 document.getElementById('skillUserId').textContent = skillData.uid;
-                document.getElementById('skillUserName').textContent = `${skillData.name || `UID:${skillData.uid}`} - 技能分析`;
+                document.getElementById('skillUserName').textContent = `${skillData.name || `UID:${skillData.uid}`} - Skill Analysis`;
                 document.getElementById('skillUserNickname').textContent = skillData.name;
-                document.getElementById('skillUserProfession').textContent = userInfo ? userInfo.profession || '未知' : '未知';
-                document.getElementById('fightPoint').textContent = userInfo ? userInfo.fightPoint || '未知' : '未知';
-                document.getElementById('maxHp').textContent = skillData.attr ? skillData.attr.max_hp || '未知' : '未知';
+                document.getElementById('skillUserProfession').textContent = userInfo ? userInfo.profession || 'Unknown' : 'Unknown';
+                document.getElementById('fightPoint').textContent = userInfo ? userInfo.fightPoint || 'Unknown' : 'Unknown';
+                document.getElementById('maxHp').textContent = skillData.attr ? skillData.attr.max_hp || 'Unknown' : 'Unknown';
 
                 currentSkillData = skillData;
 
@@ -641,7 +660,7 @@
             }
 
             function updateSkillDisplay() {
-                const typeLabel = SKILL_VIEW_LABELS[currentSkillView] || '技能';
+                const typeLabel = SKILL_VIEW_LABELS[currentSkillView] || 'Skill';
 
                 const tableBody = document.getElementById('skillTableBody');
                 const skillCountElement = document.getElementById('skillCount');
@@ -656,7 +675,7 @@
                         emptyRow.className = 'skill-empty-row';
                         const emptyCell = document.createElement('td');
                         emptyCell.colSpan = 10;
-                        emptyCell.textContent = `暂无${typeLabel}技能数据`;
+                        emptyCell.textContent = `No ${typeLabel} skill data available`;
                         emptyRow.appendChild(emptyCell);
                         tableBody.appendChild(emptyRow);
                     }
@@ -688,7 +707,7 @@
                     emptyRow.className = 'skill-empty-row';
                     const emptyCell = document.createElement('td');
                     emptyCell.colSpan = 10;
-                    emptyCell.textContent = `暂无${typeLabel}技能数据`;
+                    emptyCell.textContent = `No ${typeLabel} skill data available`;
                     emptyRow.appendChild(emptyCell);
                     tableBody.appendChild(emptyRow);
                     renderSkillCharts([], [], [], [], typeLabel);
@@ -699,20 +718,20 @@
                     .map(([skillId, skill]) => ({ skillId, skill }))
                     .sort((a, b) => Number(b.skill.totalDamage ?? 0) - Number(a.skill.totalDamage ?? 0));
 
-                // 为图表准备三组数据
-                const skillNames = []; // 用来存 displayName
+                // Prepare three sets of data for chart
+                const skillNames = []; // Store displayName
                 const damages = [];
                 const critRates = [];
                 const luckyRates = [];
                 const sortedSkillDamage = sortedSkills.reduce((sum, { skill }) => sum + Number(skill.totalDamage ?? 0), 0);
 
-                // 渲染表格 + 收集图表数据
+                // Render table + collect chart data
                 sortedSkills.forEach(({ skillId, skill }) => {
                     const name = skill.displayName || skillId;
                     const damageBreakdown = skill.damageBreakdown || {};
                     const critDamage = Number(damageBreakdown.critical || 0) + Number(damageBreakdown.crit_lucky || 0);
                     const normalDamage = Number(damageBreakdown.normal || 0) + Number(damageBreakdown.lucky || 0);
-                    //占比
+                    // Percentage
                     const percentage = sortedSkillDamage > 0 ? (Number(skill.totalDamage ?? 0) / sortedSkillDamage) * 100 : 0;
 
                     const row = document.createElement('tr');
@@ -729,7 +748,7 @@
                     `;
                     tableBody.appendChild(row);
 
-                    // 收集给图表的数据
+                    // Collect data for chart
                     skillNames.push(name);
                     damages.push(Number(skill.totalDamage ?? 0));
                     critRates.push(Number(skill.critRate ?? 0) * 100);
@@ -770,7 +789,7 @@
                 });
             }
 
-            // 渲染技能图表
+            // Render skill chart
             function renderSkillCharts(skillNames, damages, critRates, luckyRates, typeLabel) {
                 const damageChartEl = document.getElementById('skillDamageChart');
                 const critChartEl = document.getElementById('skillCritChart');
@@ -792,7 +811,7 @@
                 skillChart2 = echarts.init(critChartEl);
 
                 if (!Array.isArray(skillNames) || skillNames.length === 0) {
-                    const emptyText = `暂无${typeLabel}技能数据`;
+                    const emptyText = `No ${typeLabel} skill data available`;
                     const emptyGraphic = {
                         type: 'text',
                         left: 'center',
@@ -806,14 +825,14 @@
 
                     skillChart1.setOption({
                         title: {
-                            text: `${typeLabel}技能数值分布`,
+                            text: `${typeLabel} Skill Value Distribution`,
                             left: 'center',
                             textStyle: { color: '#e2e8f0' },
                         },
                         graphic: emptyGraphic,
                         series: [
                             {
-                                name: `${typeLabel}技能数值`,
+                                name: `${typeLabel} Skill Values`,
                                 type: 'pie',
                                 data: [],
                             },
@@ -822,7 +841,7 @@
 
                     skillChart2.setOption({
                         title: {
-                            text: `${typeLabel}技能暴击率与幸运触发率`,
+                            text: `${typeLabel} Skill Critical Rate vs Lucky Strike Rate`,
                             left: 'center',
                             textStyle: { color: '#e2e8f0' },
                         },
@@ -842,23 +861,23 @@
                 const allDamages = damages.reduce((a, b) => a + b, 0);
                 const otherDamages = Math.max(0, allDamages - topAllDamages);
 
-                // 构造前 5 的 data，并且都显示标签
+                // Build top 5 data and show all labels
                 const pieData = topNames.map((name, idx) => ({
                     value: topDamages[idx],
                     name,
                     label: {
-                        show: true, // 打开这一项的标签
-                        position: 'outside', // 放到扇区外侧
-                        formatter: '{b}\n{d}%', // 显示“名称 + 百分比”
+                        show: true, // Enable labels for this item
+                        position: 'outside', // Place outside the sector
+                        formatter: '{b}\n{d}%', // Display "Name + Percentage"”
                     },
                     labelLine: {
-                        show: true, // 显示引导线
+                        show: true, // Show guide lines
                     },
                 }));
                 if (otherDamages > 0) {
                     pieData.push({
                         value: otherDamages,
-                        name: '其他',
+                        name: 'Others',
                         label: {
                             show: true,
                             position: 'outside',
@@ -870,10 +889,10 @@
                     });
                 }
 
-                // 技能数值分布图
+                // Skill value distribution chart
                 const damageOption = {
                     title: {
-                        text: `${typeLabel}技能数值分布`,
+                        text: `${typeLabel} Skill Value Distribution`,
                         left: 'center',
                         textStyle: { color: '#e2e8f0' },
                     },
@@ -892,7 +911,7 @@
                     },
                     series: [
                         {
-                            name: `${typeLabel}技能数值`,
+                            name: `${typeLabel} Skill Values`,
                             type: 'pie',
                             radius: ['40%', '70%'],
                             avoidLabelOverlap: false,
@@ -921,10 +940,10 @@
                     ],
                 };
 
-                // 暴击率/幸运触发率对比图
+                // Critical rate/Lucky Strike rate comparison chart
                 const critOption = {
                     title: {
-                        text: `${typeLabel}技能暴击率与幸运触发率`,
+                        text: `${typeLabel} Skill Critical Rate vs Lucky Strike Rate`,
                         left: 'center',
                         textStyle: { color: '#e2e8f0' },
                     },
@@ -936,7 +955,7 @@
                         textStyle: { color: '#ecf0f1' },
                     },
                     legend: {
-                        data: ['暴击率', '幸运触发率'],
+                        data: ['Critical Rate', 'Lucky Strike Rate'],
                         bottom: 10,
                         textStyle: { color: '#cbd5e0' },
                     },
@@ -959,7 +978,7 @@
                     },
                     yAxis: {
                         type: 'value',
-                        name: '百分比',
+                        name: 'Percentage',
                         min: 0,
                         max: 100,
                         axisLine: { lineStyle: { color: '#7f8c8d' } },
@@ -968,13 +987,13 @@
                     },
                     series: [
                         {
-                            name: '暴击率',
+                            name: 'Critical Rate',
                             type: 'bar',
                             data: critRates,
                             itemStyle: { color: '#ff9966' },
                         },
                         {
-                            name: '幸运触发率',
+                            name: 'Lucky Strike Rate',
                             type: 'bar',
                             data: luckyRates,
                             itemStyle: { color: '#93f9b9' },
@@ -987,19 +1006,19 @@
                 ensureSkillChartsResizeListener();
             }
 
-            // 多用户性能优化配置
+            // Multi-user performance optimization configuration
             const CHART_CONFIG = {
-                MAX_VISIBLE_USERS: 20, // 最多同时显示的用户数
-                PERFORMANCE_MODE_THRESHOLD: 15, // 超过此数量启用性能模式
-                UPDATE_INTERVAL_NORMAL: 33, // 正常模式更新间隔(30fps)
-                UPDATE_INTERVAL_PERFORMANCE: 100, // 性能模式更新间隔(10fps)
-                DATA_POINT_LIMIT: 300, // 性能模式下的数据点限制(30秒)
+                MAX_VISIBLE_USERS: 20, // Maximum number of users displayed simultaneously
+                PERFORMANCE_MODE_THRESHOLD: 15, // Enable performance mode when exceeding this number
+                UPDATE_INTERVAL_NORMAL: 33, // Normal mode update interval (30fps)
+                UPDATE_INTERVAL_PERFORMANCE: 100, // Performance mode update interval (10fps)
+                DATA_POINT_LIMIT: 300, // Data point limit in performance mode (30 seconds)
             };
 
             let performanceMode = false;
-            let userPriorityCache = {}; // 用户优先级缓存
+            let userPriorityCache = {}; // User priority cache
 
-            // 优化的20色配色方案
+            // Optimized 20-color scheme
             const PALETTE_DARK_20 = [
                 '#FF6B6B',
                 '#4ECDC4',
@@ -1021,7 +1040,7 @@
                 '#A29BFE',
                 '#00B894',
                 '#FDCB6E',
-            ]; // 高饱和度版本，深色背景下区分度更高
+            ]; // High saturation version, better distinction on dark backgrounds
 
             const PALETTE_LIGHT_20 = [
                 '#E74C3C',
@@ -1044,19 +1063,19 @@
                 '#17A2B8',
                 '#28A745',
                 '#6F42C1',
-            ]; // 强对比版本，浅色背景下清晰易辨
+            ]; // High contrast version, clear and distinguishable on light backgrounds
 
             function pickPalette() {
                 return document.body.classList.contains('dark-mode') ? PALETTE_DARK_20 : PALETTE_LIGHT_20;
             }
 
-            // 为用户分配固定颜色
+            // Assign fixed colors to users
             function getUserColor(userId) {
                 const palette = pickPalette();
                 const userIdStr = String(userId);
 
                 if (!userColorMap[userIdStr]) {
-                    // 基于用户ID的哈希值分配颜色，确保同一个用户总是得到相同的颜色
+                    // Assign colors based on user ID hash to ensure same user always gets same color
                     let hash = 0;
                     for (let i = 0; i < userIdStr.length; i++) {
                         hash = (hash << 5) - hash + userIdStr.charCodeAt(i);
@@ -1068,24 +1087,24 @@
                 return userColorMap[userIdStr];
             }
 
-            // 服务器状态提示管理
+            // Server status notification management
             function showServerStatus(status, message, autoHide = true) {
                 const statusElement = document.getElementById('serverStatus');
                 const textElement = document.getElementById('serverStatusText');
 
                 if (!statusElement || !textElement) return;
 
-                // 清除之前的自动隐藏定时器
+                // Clear previous auto-hide timer
                 if (serverStatusTimeout) {
                     clearTimeout(serverStatusTimeout);
                     serverStatusTimeout = null;
                 }
 
-                // 更新状态样式
+                // Update status styles
                 statusElement.className = 'server-status show ' + status;
                 textElement.textContent = message;
 
-                // 自动隐藏（连接成功状态3秒后隐藏，其他状态不自动隐藏）
+                // Auto-hide (hide connected state after 3 seconds, other states don't auto-hide)
                 if (autoHide && status === 'connected') {
                     serverStatusTimeout = setTimeout(() => {
                         hideServerStatus();
@@ -1104,157 +1123,157 @@
                 }
             }
 
-            // 用户优先级计算 - 基于DPS和活跃度
+            // User priority calculation - based on DPS and activity
             function calculateUserPriority(userId, userArray) {
                 const user = userArray.find((u) => u.id.toString() === userId);
                 if (!user) return 0;
 
                 const dpsScore = user.realtime_dps_max || 0;
-                const totalDamageScore = (user.total_damage?.total || 0) / 100000; // 归一化
+                const totalDamageScore = (user.total_damage?.total || 0) / 100000; // Normalize
                 const activityScore = dpsHistory[userId] ? dpsHistory[userId].filter((p) => p.dps > 0).length : 0;
 
-                // 手动设置昵称的用户优先级更高
+                // Users with manually set nicknames have higher priority
                 const nicknameBonus = userNicknames[userId] ? 1000 : 0;
 
                 return dpsScore + totalDamageScore + activityScore + nicknameBonus;
             }
 
-            // 获取优先显示的用户列表
+            // Get priority display user list
             function getTopPriorityUsers(userArray, maxCount) {
                 const userIds = Object.keys(dpsHistory).filter(
                     (userId) => visibleUsers[userId] !== false && dpsHistory[userId] && dpsHistory[userId].length > 0,
                 );
 
-                // 计算并缓存优先级
+                // Calculate and cache priority
                 userIds.forEach((userId) => {
                     userPriorityCache[userId] = calculateUserPriority(userId, userArray);
                 });
 
-                // 按优先级排序并限制数量
+                // Sort by priority and limit quantity
                 return userIds.sort((a, b) => userPriorityCache[b] - userPriorityCache[a]).slice(0, maxCount);
             }
 
-            // WebSocket连接初始化
+            // WebSocket connection initialization
             function initWebSocket() {
                 try {
-                    showServerStatus('reconnecting', '🔄 正在连接服务器...', false);
+                    showServerStatus('reconnecting', '🔄 Connecting to server...', false);
                     socket = io();
 
                     socket.on('connect', () => {
-                        console.log('WebSocket连接成功');
+                        console.log('WebSocket connection successful');
                         isWebSocketConnected = true;
                         lastWebSocketMessage = Date.now();
                         webSocketReconnectAttempts = 0;
-                        showServerStatus('connected', '✅ 服务器连接成功');
+                        showServerStatus('connected', '✅ Server connection successful');
 
-                        // 如果之前启用了API备用，现在切换回WebSocket
+                        // If API fallback was previously enabled, now switch back to WebSocket
                         if (fallbackToAPI) {
-                            console.log('WebSocket重连成功，从API模式切换回WebSocket模式');
+                            console.log('WebSocket reconnection successful, switching from API mode back to WebSocket mode');
                             fallbackToAPI = false;
                             stopAPIFallback();
                         }
                     });
 
                     socket.on('disconnect', () => {
-                        console.log('WebSocket连接断开');
+                        console.log('WebSocket connection disconnected');
                         isWebSocketConnected = false;
                         webSocketReconnectAttempts++;
-                        if (!fallbackToAPI) showServerStatus('disconnected', '❌ 服务器连接断开', false);
+                        if (!fallbackToAPI) showServerStatus('disconnected', '❌ Server connection disconnected', false);
                     });
 
                     socket.on('data', (data) => {
                         lastWebSocketMessage = Date.now();
-                        // 暂停时不处理数据更新
+                        // Don't process data updates when paused
                         if (!isPaused) {
                             processDataUpdate(data);
                         }
                     });
 
                     socket.on('connect_error', (error) => {
-                        console.error('WebSocket连接错误:', error);
+                        console.error('WebSocket connection error:', error);
                         isWebSocketConnected = false;
-                        if (!fallbackToAPI) showServerStatus('disconnected', '❌ 服务器连接失败', false);
+                        if (!fallbackToAPI) showServerStatus('disconnected', '❌ Server connection failed', false);
                     });
                 } catch (error) {
-                    console.error('WebSocket初始化失败:', error);
-                    showServerStatus('disconnected', '❌ WebSocket初始化失败', false);
+                    console.error('WebSocket initialization failed:', error);
+                    showServerStatus('disconnected', '❌ WebSocket initialization failed', false);
                     startAPIFallback();
                 }
             }
 
-            // 监控WebSocket连接状态，5秒无消息则切换到API
+            // Monitor WebSocket connection status, switch to API after 5 seconds without messages
             function monitorWebSocketConnection() {
                 setInterval(() => {
-                    // 暂停时不进行连接监控
+                    // Don't monitor connection when paused
                     if (isPaused) return;
 
                     const timeSinceLastMessage = Date.now() - lastWebSocketMessage;
 
                     if (timeSinceLastMessage > 5000 && !fallbackToAPI) {
-                        console.warn('WebSocket超过5秒无消息，切换到API轮询模式');
+                        console.warn('WebSocket no messages for over 5 seconds, switching to API polling mode');
                         fallbackToAPI = true;
-                        showServerStatus('api-mode', '📡 切换到API轮询模式', false);
+                        showServerStatus('api-mode', '📡 Switched to API polling mode', false);
                         startAPIFallback();
                     }
-                }, 5000); // 每5秒检查一次
+                }, 5000); // Check every 5 seconds
             }
 
-            // 启动API备用模式
+            // Start API fallback mode
             function startAPIFallback() {
-                if (apiInterval) return; // 避免重复启动
+                if (apiInterval) return; // Avoid duplicate startup
 
-                console.log('启动API轮询备用模式');
-                showServerStatus('api-mode', '📡 使用API轮询模式', false);
+                console.log('Starting API polling fallback mode');
+                showServerStatus('api-mode', '📡 Using API polling mode', false);
                 apiInterval = setInterval(fetchData, 100);
             }
 
-            // 停止API备用模式
+            // Stop API fallback mode
             function stopAPIFallback() {
                 if (apiInterval) {
                     clearInterval(apiInterval);
                     apiInterval = null;
-                    console.log('停止API轮询备用模式');
+                    console.log('Stopping API polling fallback mode');
                 }
             }
 
-            // 获取用户数据的辅助函数
+            // Helper function to get user data
             function getUserFromArray(userId) {
                 return currentUserArray.find((user) => user.id.toString() === userId.toString());
             }
 
-            // 判断角色是否未参与战斗
+            // Determine if character hasn't participated in combat
             function isUserInactive(user) {
-                // 检查总伤害、总DPS、总HPS是否都为0
+                // Check if total damage, total DPS, and total HPS are all 0
                 const totalDamage = user.total_damage?.total || 0;
                 const totalDps = user.total_dps || 0;
                 const totalHps = user.total_hps || 0;
 
-                // 检查暴击率和幸运率是否为NaN
+                // Check if critical rate and lucky rate are NaN
                 const critRate = user.total_count?.critical / user.total_count?.total;
                 const luckyRate = user.total_count?.lucky / user.total_count?.total;
 
                 return (totalDamage === 0 && totalDps === 0 && totalHps === 0) || (isNaN(critRate) && isNaN(luckyRate));
             }
 
-            // 切换隐藏未参战角色功能
+            // Toggle hide inactive character functionality
             function toggleHideInactiveUsers() {
                 hideInactiveUsers = !hideInactiveUsers;
                 const btn = document.getElementById('hideInactiveBtn');
                 if (hideInactiveUsers) {
                     btn.classList.add('active');
-                    btn.innerHTML = '👀 已隐藏未参战';
+                    btn.innerHTML = '👀 Unhide Inactive';
                 } else {
                     btn.classList.remove('active');
-                    btn.innerHTML = '👀 隐藏未参战';
+                    btn.innerHTML = '👀 Hide Inactive';
                 }
 
-                // 重新处理当前数据
+                // Reprocess current data
                 if (currentUserArray && currentUserArray.length > 0) {
-                    // 重新过滤并更新表格
+                    // Refilter and update table
                     sortUserArray(currentUserArray);
                     let visibleUserArray = currentUserArray.filter((user) => visibleUsers[user.id] !== false);
 
-                    // 如果启用了隐藏未参战角色，进一步过滤
+                    // If hiding inactive users is enabled, filter further
                     if (hideInactiveUsers) {
                         visibleUserArray = visibleUserArray.filter((user) => !isUserInactive(user));
                     }
@@ -1289,7 +1308,7 @@
 
                 const entries = Object.entries(enemyData || {});
                 const parsed = entries.map(([id, info]) => {
-                    const name = info && typeof info.name === 'string' && info.name.trim().length > 0 ? info.name.trim() : `未知敌人 #${id}`;
+                    const name = info && typeof info.name === 'string' && info.name.trim().length > 0 ? info.name.trim() : `Unknown Enemy #${id}`;
                     const hp = Number(info?.hp ?? 0);
                     const maxHp = Number(info?.max_hp ?? 0);
                     return {
@@ -1300,11 +1319,11 @@
                     };
                 });
 
-                const validEnemies = parsed.filter((enemy) => (enemy.name || enemy.hp || enemy.maxHp) && !String(enemy.name).endsWith('-共鸣'));
+                const validEnemies = parsed.filter((enemy) => (enemy.name || enemy.hp || enemy.maxHp) && !String(enemy.name).endsWith('-Resonance'));
 
                 if (validEnemies.length === 0) {
-                    if (enemySummary) enemySummary.textContent = '共 0 个目标，存活 0 个';
-                    enemyList.innerHTML = '<div class="enemy-empty">暂未发现敌方目标</div>';
+                    if (enemySummary) enemySummary.textContent = 'Total 0 targets, 0 alive';
+                    enemyList.innerHTML = '<div class="enemy-empty">No enemy targets detected</div>';
                     lastEnemySignature = '__empty__';
                     return;
                 }
@@ -1327,8 +1346,8 @@
                     const fillColor =
                         enemy.maxHp > 0 ? (enemy.hp <= 0 ? 'rgba(127, 140, 141, 0.35)' : 'rgba(231, 76, 60, 0.32)') : 'rgba(231, 76, 60, 0.18)';
                     const currentHp = Math.max(0, enemy.hp);
-                    const hpDisplay = `${formatNumber(currentHp)} / ${enemy.maxHp > 0 ? formatNumber(enemy.maxHp) : '未知'}`;
-                    const statusText = enemy.maxHp > 0 ? (enemy.hp <= 0 ? '已击败' : `${percent.toFixed(1)}%`) : '血量未知';
+                    const hpDisplay = `${formatNumber(currentHp)} / ${enemy.maxHp > 0 ? formatNumber(enemy.maxHp) : 'Unknown'}`;
+                    const statusText = enemy.maxHp > 0 ? (enemy.hp <= 0 ? 'Defeated' : `${percent.toFixed(1)}%`) : 'HP Unknown';
                     const statusClass = enemy.maxHp > 0 && enemy.hp <= 0 ? 'enemy-status defeated' : 'enemy-status';
 
                     const item = document.createElement('div');
@@ -1348,37 +1367,37 @@
 
                 if (enemySummary) {
                     const aliveCount = sortedEnemies.filter((enemy) => enemy.hp > 0).length;
-                    enemySummary.textContent = `共 ${sortedEnemies.length} 个目标，存活 ${aliveCount} 个`;
+                    enemySummary.textContent = `Total ${sortedEnemies.length} targets, ${aliveCount} alive`;
                 }
             }
 
-            // 处理数据更新（WebSocket和API通用）
+            // Process data update (common for WebSocket and API)
             function processDataUpdate(data, updateHistory = true) {
                 try {
-                    // 将数据转换为数组以便排序
+                    // Convert data to array for sorting
                     const userArray = Object.keys(data.user).map((id) => ({
                         id: Number(id),
                         ...data.user[id],
                     }));
 
-                    // 缓存当前用户数组
+                    // Cache current user array
                     currentUserArray = userArray;
 
-                    // 更新DPS历史数据
+                    // Update DPS history data
                     if (updateHistory) {
                         updateDpsHistory(userArray);
                     }
 
-                    // 更新用户控制列表
+                    // Update user control list
                     updateUserControlsList(userArray);
 
-                    // 根据当前排序模式排序
+                    // Sort according to current sort mode
                     sortUserArray(userArray);
 
-                    // 过滤不可见的用户
+                    // Filter invisible users
                     let visibleUserArray = userArray.filter((user) => visibleUsers[user.id] !== false);
 
-                    // 如果启用了隐藏未参战角色，进一步过滤
+                    // If hiding inactive users is enabled, filter further
                     if (hideInactiveUsers) {
                         visibleUserArray = visibleUserArray.filter((user) => !isUserInactive(user));
                     }
@@ -1387,37 +1406,37 @@
                     updateTables(visibleUserArray);
                     updateEnemyDisplay(data.enemy || {});
 
-                    // 检查是否需要启用性能模式
+                    // Check if performance mode needs to be enabled
                     const activeUserCount = Object.keys(dpsHistory).length;
                     const shouldEnablePerformanceMode = activeUserCount > CHART_CONFIG.PERFORMANCE_MODE_THRESHOLD;
 
                     if (shouldEnablePerformanceMode !== performanceMode) {
                         performanceMode = shouldEnablePerformanceMode;
-                        console.log(`${performanceMode ? '启用' : '关闭'}性能模式 (用户数: ${activeUserCount})`);
+                        console.log(`${performanceMode ? 'Enable' : 'Disable'} performance mode (User count: ${activeUserCount})`);
                     }
 
-                    // 更新图表
+                    // Update charts
                     if (updateHistory) {
                         updateChart(userArray);
                     }
                 } catch (err) {
-                    console.error('处理数据更新失败：', err);
+                    console.error('Failed to process data update:', err);
                 }
             }
 
-            // 生成表格行
+            // Generate table rows
             function updateTables(visibleUserArray) {
                 const damageTable = document.getElementById('damageTable').querySelector('tbody');
-                //获取damageTable里的所有行
+                // Get all rows in damageTable
                 let existingRows = damageTable.querySelectorAll('tr');
                 if (existingRows.length > visibleUserArray.length) {
-                    // 移除多余的行
+                    // Remove excess rows
                     for (let i = existingRows.length - 1; i >= visibleUserArray.length; i--) {
                         damageTable.removeChild(existingRows[i]);
                     }
                 }
                 if (existingRows.length < visibleUserArray.length) {
-                    // 添加新行
+                    // Add new rows
                     for (let i = existingRows.length; i < visibleUserArray.length; i++) {
                         const row = document.createElement('tr');
                         damageTable.appendChild(row);
@@ -1434,13 +1453,13 @@
 
                     const isSimpleMode = document.body.classList.contains('simple-mode');
 
-                    // 其他数据列
+                    // Other data columns
                     const otherCells = [
-                        user.profession || '未知',
+                        user.profession || 'Unknown',
                         Number(user.fightPoint).toLocaleString(),
-                        (user.hp ?? '未知').toLocaleString(),
+                        (user.hp ?? 'Unknown').toLocaleString(),
                         Number(user.taken_damage).toLocaleString(),
-                        user.dead_count ?? '未知',
+                        user.dead_count ?? 'Unknown',
                         `${(crit_rate * 100).toFixed(2)}%`,
                         `${(lucky_rate * 100).toFixed(2)}%`,
                     ];
@@ -1475,23 +1494,23 @@
                         );
                     }
                     let existingCells = row.querySelectorAll('td');
-                    //所需展示的列数
+                    // Number of columns to display
                     const requiredColumnCount = 3 + otherCells.length;
                     if (existingCells.length > requiredColumnCount) {
-                        // 移除多余的单元格
+                        // Remove excess cells
                         for (let j = existingCells.length - 1; j >= requiredColumnCount; j--) {
                             row.removeChild(existingCells[j]);
                         }
                     }
                     if (existingCells.length < requiredColumnCount) {
-                        // 添加新单元格
+                        // Add new cells
                         for (let j = existingCells.length; j < requiredColumnCount; j++) {
                             const cell = document.createElement('td');
                             row.appendChild(cell);
                         }
                     }
                     existingCells = row.querySelectorAll('td');
-                    // 更新单元格内容
+                    // Update cell content
                     existingCells.forEach((cell, index) => {
                         if (index < 2) return;
                         if (otherCells[index - 2] !== undefined) {
@@ -1499,11 +1518,11 @@
                         }
                     });
 
-                    // 角色ID列
+                    // Character ID column
                     const uidCell = existingCells[0];
                     uidCell.textContent = `${user.id}`;
 
-                    // 角色昵称列
+                    // Character nickname column
                     const nicknameCell = existingCells[1];
                     // Check if user.name is a non-empty string
                     const hasValidName = user.name && user.name.trim() !== '';
@@ -1512,7 +1531,7 @@
                     nicknameCell.textContent = nickname;
                     const operationCell = existingCells[existingCells.length - 1];
                     if (operationCell.querySelector('.skill-btn')) {
-                        // 如果已经存在技能按钮，则只更新用户ID
+                        // If skill button already exists, just update user ID
                         operationCell.querySelector('.skill-btn').setAttribute('data-user-id', user.id);
                         operationCell.querySelector('.copy-btn').setAttribute('data-user-id', user.id);
                     } else {
@@ -1521,30 +1540,30 @@
                         operationDiv.className = 'operation-div';
                         operationCell.appendChild(operationDiv);
 
-                        // 创建复制按钮
+                        // Create copy button
                         const copyButton = document.createElement('button');
                         copyButton.className = 'copy-btn';
-                        copyButton.innerHTML = '<i class="icon">📋</i> 复制数据';
+                        copyButton.innerHTML = '<i class="icon">📋</i> Copy Data';
                         copyButton.setAttribute('data-user-id', user.id);
                         operationDiv.appendChild(copyButton);
 
-                        // 创建技能按钮
+                        // Create skill button
                         const skillButton = document.createElement('button');
                         skillButton.className = 'skill-btn';
-                        skillButton.innerHTML = '<i class="icon">📊</i> 技能分析';
+                        skillButton.innerHTML = '<i class="icon">📊</i> Skill Analysis';
                         skillButton.setAttribute('data-user-id', user.id);
                         operationDiv.appendChild(skillButton);
                     }
                 }
                 updateTableStickyHeader();
-                // 应用列显示设置
+                // Apply column display settings
                 if (typeof applyColumnVisibility === 'function') {
                     applyColumnVisibility();
                 }
             }
 
             async function fetchData() {
-                // 暂停时不获取数据
+                // Don't fetch data when paused
                 if (isPaused) return;
 
                 try {
@@ -1555,13 +1574,13 @@
                     const data = await res.json();
                     processDataUpdate(data);
 
-                    // API请求成功时，如果显示的是断线状态，更新为API模式
+                    // When API request succeeds, if showing disconnected state, update to API mode
                     if (fallbackToAPI) {
-                        showServerStatus('api-mode', '📡 API轮询模式运行中', false);
+                        showServerStatus('api-mode', '📡 API polling mode running', false);
                     }
                 } catch (err) {
-                    console.error('获取数据失败：', err);
-                    showServerStatus('disconnected', '❌ 无法获取服务器数据', false);
+                    console.error('Failed to fetch data:', err);
+                    showServerStatus('disconnected', '❌ Unable to fetch server data', false);
                 }
             }
 
@@ -1614,49 +1633,49 @@
                 const res = await fetch('/api/clear');
                 const data = await res.json();
 
-                // 清空历史数据和图表缓存
+                // Clear history data and chart cache
                 dpsHistory = {};
                 chartDatasetMap = {};
                 userPriorityCache = {};
-                userColorMap = {}; // 清空颜色映射
-                currentUserArray = []; // 清空当前用户数组缓存
-                lastUpdateTime = 0; // 重置图表更新时间
+                userColorMap = {}; // Clear color mapping
+                currentUserArray = []; // Clear current user array cache
+                lastUpdateTime = 0; // Reset chart update time
                 performanceMode = false;
                 updateEnemyDisplay({});
 
-                // 清空ECharts图表 - 完全重新初始化
+                // Clear ECharts - complete reinitialization
                 if (chart) {
-                    // 销毁现有图表
+                    // Destroy existing chart
                     chart.dispose();
                     chart = null;
 
-                    // 重置图表初始化状态
+                    // Reset chart initialization state
                     chartInitialized = false;
 
-                    // 重新初始化空图表
+                    // Reinitialize empty chart
                     initChart();
                 }
 
-                // 清空控制面板中的用户控制项
+                // Clear user control items in control panel
                 const userControlsList = document.getElementById('userControlsList');
                 if (userControlsList) {
                     userControlsList.innerHTML = '';
                 }
 
                 fetchData();
-                // 清空表格显示
+                // Clear table display
                 const damageTable = document.getElementById('damageTable').querySelector('tbody');
                 damageTable.innerHTML = '';
 
-                // 即使在暂停状态下也要获取数据以显示清空后的结果
-                // 临时保存暂停状态
+                // Even when paused, fetch data to show cleared results
+                // Temporarily save pause state
                 const wasPaused = isPaused;
                 isPaused = false;
 
-                // 获取并显示清空后的数据
+                // Get and display data after clearing
                 await fetchData();
 
-                // 恢复暂停状态
+                // Restore pause state
                 isPaused = wasPaused;
             }
 
@@ -1667,11 +1686,11 @@
 
                 if (isDarkMode) {
                     body.classList.remove('dark-mode');
-                    button.textContent = '🌙 夜间模式';
+                    button.textContent = '🌙 Dark Mode';
                     localStorage.setItem('darkMode', 'false');
                 } else {
                     body.classList.add('dark-mode');
-                    button.textContent = '☀️ 日间模式';
+                    button.textContent = '☀️ Light Mode';
                     localStorage.setItem('darkMode', 'true');
                 }
             }
@@ -1683,30 +1702,30 @@
 
                 if (isSimpleMode) {
                     body.classList.remove('simple-mode');
-                    button.textContent = '📋 简洁模式';
+                    button.textContent = '📋 Detailed Mode';
                     localStorage.setItem('simpleMode', 'false');
                 } else {
                     body.classList.add('simple-mode');
-                    button.textContent = '📄 详细模式';
+                    button.textContent = '📄 Simple Mode';
                     localStorage.setItem('simpleMode', 'true');
                 }
 
-                // 切换模式后需要重新应用列显示设置
+                // Need to reapply column display settings after switching modes
                 if (typeof applyColumnVisibility === 'function') {
                     applyColumnVisibility();
                 }
 
-                // 在暂停状态下，切换模式后需要重新渲染表格
+                // In pause state, need to re-render table after switching modes
                 if (isPaused && lastVisiableUserArray.length > 0) {
                     updateTables(lastVisiableUserArray);
                 }
             }
 
-            // 打开血条监控窗口
+            // Open HP monitoring window
             function openHpWindow() {
-                // 首先尝试画中画模式
+                // First try picture-in-picture mode
                 if ('documentPictureInPicture' in window && window.documentPictureInPicture.requestWindow) {
-                    console.log('尝试使用画中画模式打开血条监控');
+                    console.log('Attempting to open HP monitoring in picture-in-picture mode');
 
                     window.documentPictureInPicture
                         .requestWindow({
@@ -1716,14 +1735,14 @@
                             preferInitialWindowPlacement: true,
                         })
                         .then((pipWindow) => {
-                            // 创建基本的HTML结构
+                            // Create basic HTML structure
                             pipWindow.document.write(`
                             <!DOCTYPE html>
                             <html lang="zh-CN">
                             <head>
                                 <meta charset="UTF-8">
                                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                <title>血条监控 - 星痕共鸣</title>
+                                <title>HP Monitor - Star Resonance</title>
                                 <style>
                                     * {
                                         margin: 0;
@@ -1750,26 +1769,26 @@
                                 </style>
                             </head>
                             <body>
-                                <iframe src="./hp_window.html" title="血条监控"></iframe>
+                                <iframe src="./hp_window.html" title="HP Monitor"></iframe>
                             </body>
                             </html>
                         `);
                             pipWindow.document.close();
 
-                            console.log('血条监控窗口已在画中画模式下打开');
+                            console.log('HP monitor window opened in picture-in-picture mode');
                         })
                         .catch((error) => {
-                            console.error('画中画模式打开失败，降级到普通窗口:', error);
+                            console.error('Picture-in-picture mode failed, fallback to normal window:', error);
                             openHpWindowFallback();
                         });
                 } else {
-                    console.log('浏览器不支持画中画功能，使用普通窗口');
-                    alert('当前浏览器不支持画中画功能，建议使用 Chrome 116 以上版本的浏览器。');
+                    console.log('Browser does not support picture-in-picture, using normal window');
+                    alert('Current browser does not support picture-in-picture. Please use Chrome 116 or higher.');
                     openHpWindowFallback();
                 }
             }
 
-            // 降级方案：使用普通窗口打开血条监控
+            // Fallback: open HP monitor in normal window
             function openHpWindowFallback() {
                 try {
                     const hpWindow = window.open(
@@ -1780,39 +1799,39 @@
 
                     if (hpWindow) {
                         hpWindow.focus();
-                        console.log('血条监控窗口已在普通窗口模式下打开');
+                        console.log('HP monitor window opened in normal window mode');
                     } else {
-                        throw new Error('无法打开新窗口，请检查浏览器弹窗拦截设置');
+                        throw new Error('Cannot open new window, please check browser popup blocker settings');
                     }
                 } catch (error) {
-                    console.error('打开血条监控窗口失败:', error);
-                    alert('打开血条监控窗口失败: ' + error.message + '\n\n请检查浏览器是否阻止了弹窗。');
+                    console.error('Failed to open HP monitor window:', error);
+                    alert('Failed to open HP monitor window: ' + error.message + '\n\nPlease check if the browser blocked the popup.');
                 }
             }
 
-            // 切换暂停/开始统计
+            // Toggle pause/start statistics
             function togglePause() {
                 isPaused = !isPaused;
                 const button = document.getElementById('pauseButton');
 
                 if (isPaused) {
-                    button.textContent = '▶️ 开始统计';
-                    console.log('统计已暂停');
-                    // 暂停时停止API轮询
+                    button.textContent = '▶️ Start';
+                    console.log('Statistics paused');
+                    // Stop API polling when paused
                     stopAPIFallback();
                 } else {
-                    button.textContent = '⏸️ 暂停统计';
-                    console.log('统计已开始');
-                    // 重新开始时，如果是API模式则重新启动
+                    button.textContent = '⏸️ Pause';
+                    console.log('Statistics started');
+                    // When restarting, restart if in API mode
                     if (fallbackToAPI) {
                         startAPIFallback();
                     }
                 }
 
-                // 保存暂停状态到本地存储
+                // Save pause state to local storage
                 localStorage.setItem('isPaused', isPaused.toString());
 
-                // 通知服务器暂停/开始状态
+                // Notify server of pause/start status
                 fetch('/api/pause', {
                     method: 'POST',
                     headers: {
@@ -1820,26 +1839,26 @@
                     },
                     body: JSON.stringify({ paused: isPaused }),
                 }).catch((err) => {
-                    console.error('设置暂停状态失败：', err);
+                    console.error('Failed to set pause state:', err);
                 });
             }
 
-            // 切换图表显示/隐藏
+            // Toggle chart show/hide
             function toggleChartVisibility() {
                 isChartVisible = !isChartVisible;
                 const chartContent = document.getElementById('dpsChartContent');
                 const toggleBtn = document.getElementById('chartToggleBtn');
 
                 if (isChartVisible) {
-                    // 展开动画
+                    // Expand animation
                     chartContent.style.height = '350px';
                     chartContent.style.opacity = '1';
                     toggleBtn.classList.remove('collapsed');
-                    toggleBtn.title = '隐藏图表';
+                    toggleBtn.title = 'Hide Chart';
 
-                    // 重新初始化图表
+                    // Reinitialize chart
                     if (!chart) {
-                        // 等待动画完成后再初始化图表
+                        // Wait for animation to complete before initializing chart
                         setTimeout(() => {
                             initChart();
                             setTimeout(() => {
@@ -1848,17 +1867,17 @@
                         }, 100);
                     }
                 } else {
-                    // 折叠动画
+                    // Collapse animation
                     chartContent.style.height = '0px';
                     chartContent.style.opacity = '0';
                     toggleBtn.classList.add('collapsed');
-                    toggleBtn.title = '显示图表';
+                    toggleBtn.title = 'Show Chart';
                 }
 
                 localStorage.setItem('chartVisible', isChartVisible.toString());
             }
 
-            // 页面加载时检查本地存储的主题偏好和排序偏好
+            // Check theme and sorting preferences from local storage on page load
             function initTheme() {
                 const isDarkMode = localStorage.getItem('darkMode') === 'true';
                 const body = document.body;
@@ -1866,7 +1885,7 @@
 
                 if (isDarkMode) {
                     body.classList.add('dark-mode');
-                    button.textContent = '☀️ 日间模式';
+                    button.textContent = '☀️ Light Mode';
                 }
             }
 
@@ -1877,7 +1896,7 @@
 
                 if (isSimpleMode) {
                     body.classList.add('simple-mode');
-                    button.textContent = '📄 详细模式';
+                    button.textContent = '📄 Simple Mode';
                 }
             }
 
@@ -1889,14 +1908,14 @@
                 }
             }
 
-            // 初始化数据组显示模式
+            // Initialize data group display mode
             function initDataGroup() {
                 const savedDataGroup = localStorage.getItem('dataGroup') || 'damage';
                 currentDataGroup = savedDataGroup;
                 setDataGroup(savedDataGroup);
             }
 
-            // 切换数据组显示
+            // Toggle data group display
             function toggleDataGroup(group) {
                 currentDataGroup = group;
                 setDataGroup(group);
@@ -1904,7 +1923,7 @@
                 if (isPaused) updateTables(lastVisiableUserArray);
             }
 
-            // 设置数据组显示状态
+            // Set data group display state
             function setDataGroup(group) {
                 const body = document.body;
                 const damageBtn = document.getElementById('damageGroupBtn');
@@ -1929,14 +1948,14 @@
                         if (allBtn) allBtn.classList.add('active');
                         break;
                     default:
-                        // 默认显示伤害&DPS
+                        // Default show Damage&DPS
                         body.classList.add('hide-healing');
                         if (damageBtn) damageBtn.classList.add('active');
                         break;
                 }
             }
 
-            // 初始化图表可见性状态
+            // Initialize chart visibility state
             function initChartVisibility() {
                 const savedChartVisible = localStorage.getItem('chartVisible');
                 if (savedChartVisible !== null) {
@@ -1950,39 +1969,39 @@
                     chartContent.style.height = '0px';
                     chartContent.style.opacity = '0';
                     toggleBtn.classList.add('collapsed');
-                    toggleBtn.title = '显示图表';
+                    toggleBtn.title = 'Show Chart';
                 } else {
                     chartContent.style.height = '350px';
                     chartContent.style.opacity = '1';
                     toggleBtn.classList.remove('collapsed');
-                    toggleBtn.title = '隐藏图表';
+                    toggleBtn.title = 'Hide Chart';
                 }
             }
 
-            // 初始化暂停状态 - 优先从服务器获取状态
+            // Initialize pause state - prioritize getting status from server
             async function initPauseState() {
                 try {
-                    // 从服务器获取当前暂停状态
+                    // Get current pause state from server
                     const response = await fetch('/api/pause');
                     const data = await response.json();
                     isPaused = data.paused;
                 } catch (error) {
-                    // 如果服务器获取失败，从本地存储获取
-                    console.warn('获取服务器暂停状态失败，使用本地存储状态');
+                    // If server fetch fails, get from local storage
+                    console.warn('Failed to get server pause state, using local storage state');
                     const savedPauseState = localStorage.getItem('isPaused');
                     isPaused = savedPauseState === 'true';
                 }
 
-                // 更新按钮状态
+                // Update button state
                 const button = document.getElementById('pauseButton');
                 if (isPaused) {
-                    button.textContent = '▶️ 开始统计';
+                    button.textContent = '▶️ Start';
                 } else {
-                    button.textContent = '⏸️ 暂停统计';
+                    button.textContent = '⏸️ Pause';
                 }
             }
 
-            // DPS历史数据管理 - 保持数据真实性
+            // DPS history data management - maintain data authenticity
             function updateDpsHistory(userArray) {
                 const currentTime = Date.now();
 
@@ -1991,20 +2010,20 @@
                         dpsHistory[user.id] = [];
                     }
 
-                    // 只记录真实的DPS数据，不进行人工平滑
+                    // Only record actual DPS data, no artificial smoothing
                     dpsHistory[user.id].push({
                         time: currentTime,
                         dps: user.realtime_dps,
-                        isActive: user.realtime_dps > 0, // 标记是否在活跃输出
+                        isActive: user.realtime_dps > 0, // Mark if actively dealing damage
                     });
 
-                    // 保持最多60秒的数据
-                    const cutoffTime = currentTime - 60000; // 60秒前
+                    // Keep at most 60 seconds of data
+                    const cutoffTime = currentTime - 60000; // 60 seconds ago
                     dpsHistory[user.id] = dpsHistory[user.id].filter((point) => point.time > cutoffTime);
                 }
             }
 
-            // 初始化ECharts图表
+            // Initialize ECharts
             function initChart() {
                 if (!isChartVisible) return;
 
@@ -2037,7 +2056,7 @@
                         },
                         formatter: function (params) {
                             if (params.length === 0) return '';
-                            let result = `<div style="font-weight: bold; margin-bottom: 4px;">时间: ${params[0].name}</div>`;
+                            let result = `<div style="font-weight: bold; margin-bottom: 4px;">Time: ${params[0].name}</div>`;
                             params.forEach((param) => {
                                 if (param.value !== null && param.value !== undefined) {
                                     result += `<div style="margin: 2px 0;">
@@ -2134,30 +2153,30 @@
 
                 chart.setOption(option);
 
-                // 监听图例的选择变化事件，同步控制面板复选框状态
+                // Listen for legend selection changes, sync control panel checkbox state
                 chart.on('legendselectchanged', function (params) {
-                    // 防止从控制面板触发的事件再次处理
+                    // Prevent re-processing events triggered from control panel
                     if (isUpdatingFromLegend) return;
 
                     const seriesName = params.name;
                     const isSelected = params.selected[seriesName];
 
-                    // 查找对应的用户ID
+                    // Find corresponding user ID
                     let userId = null;
 
-                    // 检查是否是UID格式的昵称
+                    // Check if it's a UID format nickname
                     const uidMatch = seriesName.match(/UID:(\d+)/);
                     if (uidMatch) {
                         userId = uidMatch[1];
                     } else {
-                        // 查找自定义昵称对应的userId
+                        // Find userId corresponding to custom nickname
                         userId = Object.keys(userNicknames).find((id) => userNicknames[id] === seriesName);
                     }
 
                     if (userId) {
                         const userIdStr = String(userId);
 
-                        // 同步visibleUsers状态
+                        // Sync visibleUsers state
                         if (isSelected) {
                             delete visibleUsers[userIdStr];
                         } else {
@@ -2165,7 +2184,7 @@
                         }
                         localStorage.setItem('visibleUsers', JSON.stringify(visibleUsers));
 
-                        // 同步控制面板复选框状态
+                        // Sync control panel checkbox state
                         const controlElement = document.querySelector(`[data-user-id="${userIdStr}"]`);
                         if (controlElement) {
                             const checkbox = controlElement.querySelector('.visibility-checkbox');
@@ -2176,37 +2195,37 @@
                     }
                 });
 
-                // 响应窗口大小变化
+                // Respond to window size changes
                 window.addEventListener('resize', () => {
                     chart.resize();
                 });
             }
 
-            // 更新图表 - 增量更新避免闪烁
+            // Update chart - incremental update to avoid flickering
             function updateChart(userArray) {
                 if (!isChartVisible) return updateChartStatus(0, Object.keys(dpsHistory).length);
                 if (!chart) return;
 
                 const currentTime = Date.now();
 
-                // 动态更新频率控制
+                // Dynamic update frequency control
                 const updateInterval = performanceMode ? CHART_CONFIG.UPDATE_INTERVAL_PERFORMANCE : CHART_CONFIG.UPDATE_INTERVAL_NORMAL;
 
                 if (currentTime - lastUpdateTime < updateInterval) return;
                 lastUpdateTime = currentTime;
 
-                // 获取优先显示的用户
+                // Get priority display users
                 const priorityUsers = getTopPriorityUsers(userArray, CHART_CONFIG.MAX_VISIBLE_USERS);
                 const activeUserSet = new Set(priorityUsers);
 
-                // 性能模式下的数据长度
+                // Data length in performance mode
                 const dataLength = performanceMode ? CHART_CONFIG.DATA_POINT_LIMIT : MAX_HISTORY_LENGTH;
 
-                // 获取当前图表配置
+                // Get current chart configuration
                 const currentOption = chart.getOption();
                 const currentSeries = currentOption.series || [];
 
-                // 生成时间轴数据
+                // Generate time axis data
                 const xAxisChanged =
                     !chartInitialized || !currentOption.xAxis || !currentOption.xAxis[0] || currentOption.xAxis[0].data.length !== dataLength;
                 let xAxisData = [];
@@ -2217,37 +2236,37 @@
                     chartInitialized = true;
                 }
 
-                // 更新series
+                // Update series
                 const updatedSeries = [];
                 const existingSeriesMap = {};
 
-                // 建立现有series映射
+                // Build existing series mapping
                 currentSeries.forEach((series, index) => {
                     existingSeriesMap[series.name] = { index, series };
                 });
 
-                // 处理每个优先用户
+                // Process each priority user
                 priorityUsers.forEach((userId, index) => {
                     const history = dpsHistory[userId];
                     const user = getUserFromArray(userId);
                     const hasValidName = user?.name && user.name.trim() !== '';
                     const nickname = userNicknames[userId] || (hasValidName ? user.name : '') || `UID:${userId}`;
-                    const color = getUserColor(userId); // 使用固定颜色分配
+                    const color = getUserColor(userId); // Use fixed color assignment
 
-                    // 构建数据数组
+                    // Build data array
                     const data = new Array(dataLength).fill(null);
 
-                    // 填充真实数据点 - 稳定化时间映射
+                    // Fill real data points - stabilized time mapping
                     const timeStep = performanceMode ? 200 : 100;
 
-                    // 使用固定时间基准，避免滚动时索引抖动
+                    // Use fixed time baseline to avoid index jitter during scrolling
                     const baseTime = Math.floor(currentTime / timeStep) * timeStep;
 
                     history.forEach((point) => {
                         const timeAgo = baseTime - point.time;
                         const dataIndex = dataLength - 1 - Math.floor(timeAgo / timeStep);
                         if (dataIndex >= 0 && dataIndex < dataLength) {
-                            // 如果该位置已有数据，取最大值避免覆盖峰值
+                            // If data exists at this position, take max to avoid overwriting peaks
                             if (data[dataIndex] === null) {
                                 data[dataIndex] = point.dps;
                             } else {
@@ -2256,12 +2275,12 @@
                         }
                     });
 
-                    // 数据稳定化处理 - 减少蠕动和跳跃
+                    // Data stabilization - reduce creep and jumps
                     if (!performanceMode) {
-                        // 1. 峰值保护：避免相邻点的峰值跳跃
+                        // 1. Peak protection: avoid peak jumps between adjacent points
                         for (let i = 1; i < data.length - 1; i++) {
                             if (data[i] !== null && data[i - 1] !== null && data[i + 1] !== null) {
-                                // 如果当前点明显偏离趋势，平滑处理
+                                // If current point deviates significantly from trend, smooth it
                                 const avg = (data[i - 1] + data[i + 1]) / 2;
                                 if (Math.abs(data[i] - avg) > avg * 0.3 && data[i] < avg) {
                                     data[i] = Math.max(data[i], avg * 0.8);
@@ -2269,10 +2288,10 @@
                             }
                         }
 
-                        // 2. 填充小间隔，保持连续性
+                        // 2. Fill small gaps to maintain continuity
                         for (let i = 1; i < data.length; i++) {
                             if (data[i] === null && data[i - 1] !== null) {
-                                // 短间隔用渐变填充，避免突然断线
+                                // Fill short gaps with gradient to avoid sudden line breaks
                                 let nextIndex = -1;
                                 for (let j = i + 1; j < Math.min(i + 3, data.length); j++) {
                                     if (data[j] !== null) {
@@ -2281,26 +2300,26 @@
                                     }
                                 }
                                 if (nextIndex !== -1 && nextIndex - i <= 2) {
-                                    // 线性插值填充
+                                    // Linear interpolation fill
                                     const step = (data[nextIndex] - data[i - 1]) / (nextIndex - i + 1);
                                     data[i] = data[i - 1] + step;
                                 } else {
-                                    // 保持前值
+                                    // Maintain previous value
                                     data[i] = data[i - 1];
                                 }
                             }
                         }
                     }
 
-                    // 重要程度分层样式（Top 5突出显示）
+                    // Importance tier styling (Top 5 highlighted display)
                     const PRIMARY_COUNT = 5;
                     const isPrimary = index < PRIMARY_COUNT;
                     const lineWidth = isPrimary ? 3.0 : 1.2;
                     const opacity = isPrimary ? 1.0 : 0.45;
 
-                    // 检查是否存在同名series
+                    // Check if series with same name exists
                     if (existingSeriesMap[nickname]) {
-                        // 更新现有series数据 - 避免重建
+                        // Update existing series data - avoid rebuilding
                         const existingSeries = existingSeriesMap[nickname].series;
                         updatedSeries.push({
                             ...existingSeries,
@@ -2319,15 +2338,15 @@
                             zlevel: isPrimary ? 0 : -1,
                         });
                     } else {
-                        // 创建新series（分层显示）
+                        // Create new series (tiered display)
                         updatedSeries.push({
                             name: nickname,
                             type: 'line',
                             data: data,
                             symbol: 'none',
-                            smooth: false, // 完全关闭平滑避免形态抖动
+                            smooth: false, // Completely disable smoothing to avoid shape jitter
                             connectNulls: false,
-                            sampling: false, // 关闭采样避免峰值游移
+                            sampling: false, // Disable sampling to avoid peak drift
                             animation: false,
                             silent: false,
                             lineStyle: {
@@ -2355,41 +2374,41 @@
                     }
                 });
 
-                // 构建图例选中状态对象
+                // Build legend selection state object
                 const legendSelected = {};
                 updatedSeries.forEach((series) => {
                     const seriesName = series.name;
-                    // 检查是否是UID格式的昵称
+                    // Check if it's a UID format nickname
                     const uidMatch = seriesName.match(/UID:(\d+)/);
                     let userId = null;
 
                     if (uidMatch) {
                         userId = uidMatch[1];
                     } else {
-                        // 查找自定义昵称对应的userId
+                        // Find userId corresponding to custom nickname
                         userId = Object.keys(userNicknames).find((id) => userNicknames[id] === seriesName);
                     }
 
-                    // 确保userId是字符串类型进行比较
+                    // Ensure userId is string type for comparison
                     const userIdStr = userId ? String(userId) : null;
 
-                    // 根据visibleUsers设置图例选中状态
+                    // Set legend selection state based on visibleUsers
                     legendSelected[seriesName] = !(userIdStr && visibleUsers[userIdStr] === false);
                 });
 
-                // y轴调整算法
+                // Y-axis adjustment algorithm
                 const visibleMax = getVisibleMaxFromSeries(updatedSeries);
 
-                // 让可见最大值占约75%图高，向上取整
+                // Make visible max occupy ~75% of chart height, round up
                 let proposedTop = visibleMax > 0 ? niceCeil(visibleMax / 0.75) : Y_AXIS_FLOOR_MIN;
 
-                // 保底最小值
+                // Minimum guaranteed value
                 proposedTop = Math.max(proposedTop, Y_AXIS_FLOOR_MIN);
 
-                // 加3%顶部余量防压顶
+                // Add 3% top margin to prevent ceiling crush
                 proposedTop = Math.max(proposedTop, visibleMax * 1.03);
 
-                // 上快下慢 + 短暂滞后
+                // Fast up, slow down + brief delay
                 const DOWN_FRAC = 0.85;
                 const DOWN_DWELL_MS = 1500;
                 const nowTs = Date.now();
@@ -2397,38 +2416,38 @@
 
                 let { yMax: curTop, since } = window.__ymax_state;
 
-                // 是否允许下调
+                // Whether downward adjustment is allowed
                 let canDown = false;
                 if (visibleMax < curTop * DOWN_FRAC) {
                     if (!since) since = nowTs;
                     canDown = nowTs - since >= DOWN_DWELL_MS;
                 } else {
-                    since = 0; // 只要又接近上沿，取消降轴计时
+                    since = 0; // Cancel axis lowering timer as soon as it approaches upper edge again
                 }
 
-                // 只允许在 canDown==true 时把目标设得比当前低
+                // Only allow target to be set lower than current when canDown==true
                 if (!canDown && proposedTop < curTop) proposedTop = curTop;
 
-                // 限制单帧最大降幅
+                // Limit maximum drop per frame
                 const MAX_DROP = 0.15;
                 if (proposedTop < curTop * (1 - MAX_DROP)) {
                     proposedTop = curTop * (1 - MAX_DROP);
                 }
 
-                // 平滑一步
+                // Smooth one step
                 const alpha = proposedTop > curTop ? 0.35 : 0.18;
                 curTop = curTop + alpha * (proposedTop - curTop);
 
-                // 微抖收敛
+                // Micro-jitter convergence
                 if (Math.abs(curTop - proposedTop) < 1) curTop = proposedTop;
 
-                // 更新状态
+                // Update state
                 window.__ymax_state = { yMax: curTop, since };
 
-                // 合并所有配置为一次setOption调用
+                // Merge all configurations into one setOption call
                 chart.setOption(
                     {
-                        // 如果这次 x 轴长度改变，也一起带上
+                        // If x-axis length changes this time, include it too
                         ...(xAxisChanged
                             ? {
                                   xAxis: {
@@ -2519,20 +2538,20 @@
                     true,
                 );
 
-                // 更新状态显示
+                // Update status display
                 updateChartStatus(priorityUsers.length, Object.keys(dpsHistory).length);
             }
 
-            // 更新图表状态显示
+            // Update chart status display
             function updateChartStatus(visibleCount, totalCount) {
                 const statusElement = document.getElementById('chartStatus');
                 if (!statusElement) return;
 
-                statusElement.textContent = `显示 ${visibleCount}/${totalCount} 用户`;
+                statusElement.textContent = `Showing ${visibleCount}/${totalCount} users`;
                 statusElement.style.color = '#666';
             }
 
-            // 更新用户控制列表
+            // Update user control list
             function updateUserControlsList(userArray) {
                 const controlsList = document.getElementById('userControlsList');
                 const existingControls = new Set(Array.from(controlsList.children).map((el) => el.dataset.userId));
@@ -2541,7 +2560,7 @@
                     const userIdStr = String(user.id);
 
                     if (existingControls.has(userIdStr)) {
-                        // 更新已存在控件的复选框状态
+                        // Update checkbox state of existing controls
                         const existingControl = controlsList.querySelector(`[data-user-id="${userIdStr}"]`);
                         if (existingControl) {
                             const checkbox = existingControl.querySelector('.visibility-checkbox');
@@ -2558,7 +2577,7 @@
                     const controlDiv = document.createElement('div');
                     controlDiv.className = 'user-controls';
                     controlDiv.dataset.userId = userIdStr;
-                    const placeholderText = hasValidName ? user.name : '昵称';
+                    const placeholderText = hasValidName ? user.name : 'Nickname';
                     controlDiv.innerHTML = `
                     <input type="checkbox" class="visibility-checkbox" ${isVisible ? 'checked' : ''} onchange="toggleUserVisibility(${user.id}, this.checked)">
                     <input type="text" class="user-nickname-input" value="${userNicknames[userIdStr] || ''}" placeholder="${placeholderText}" onchange="updateNickname(${user.id}, this.value)" oninput="updateNickname(${user.id}, this.value)">
@@ -2569,7 +2588,7 @@
                 }
             }
 
-            // 更新昵称
+            // Update nickname
             function updateNickname(userId, nickname) {
                 if (nickname.trim()) {
                     userNicknames[userId] = nickname.trim();
@@ -2579,9 +2598,9 @@
                 localStorage.setItem('userNicknames', JSON.stringify(userNicknames));
             }
 
-            // 切换用户可见性
+            // Toggle user visibility
             function toggleUserVisibility(userId, isVisible) {
-                // 确保userId是字符串类型
+                // Ensure userId is string type
                 const userIdStr = String(userId);
 
                 if (isVisible) {
@@ -2591,51 +2610,51 @@
                 }
                 localStorage.setItem('visibleUsers', JSON.stringify(visibleUsers));
 
-                // 使用ECharts的dispatchAction来切换图例，这样与图例点击行为完全一致
+                // Use ECharts dispatchAction to toggle legend, consistent with legend click behavior
                 if (chart) {
-                    // 设置标志防止递归触发
+                    // Set flag to prevent recursive triggering
                     isUpdatingFromLegend = true;
 
-                    // 找到对应的series名称
+                    // Find corresponding series name
                     const user = getUserFromArray(userId);
                     const hasValidName = user?.name && user.name.trim() !== '';
                     const nickname = userNicknames[userIdStr] || (hasValidName ? user.name : '') || `UID:${userId}`;
 
-                    // 通过ECharts API切换图例选中状态
+                    // Toggle legend selection state via ECharts API
                     chart.dispatchAction({
                         type: 'legendToggleSelect',
                         name: nickname,
                     });
 
-                    // 重置标志
+                    // Reset flag
                     setTimeout(() => {
                         isUpdatingFromLegend = false;
                     }, 100);
                 }
             }
 
-            // 全选/取消全选
+            // Select all/deselect all
             function toggleAllUsers() {
                 const checkboxes = document.querySelectorAll('.visibility-checkbox');
                 const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
 
-                // 批量更新所有用户的可见性状态
+                // Batch update visibility state for all users
                 checkboxes.forEach((cb) => {
                     cb.checked = !allChecked;
                     const userId = cb.parentElement.dataset.userId;
 
                     if (!allChecked) {
-                        // 全选：显示所有用户
+                        // Select all: show all users
                         delete visibleUsers[userId];
                     } else {
-                        // 取消全选：隐藏所有用户
+                        // Deselect all: hide all users
                         visibleUsers[userId] = false;
                     }
                 });
 
                 localStorage.setItem('visibleUsers', JSON.stringify(visibleUsers));
 
-                // 批量同步图例状态
+                // Batch sync legend state
                 if (chart) {
                     checkboxes.forEach((cb) => {
                         const userId = cb.parentElement.dataset.userId;
@@ -2643,18 +2662,18 @@
                         const hasValidName = user?.name && user.name.trim() !== '';
                         const nickname = userNicknames[userId] || (hasValidName ? user.name : '') || `UID:${userId}`;
 
-                        // 设置标志防止递归触发
+                        // Set flag to prevent recursive triggering
                         isUpdatingFromLegend = true;
 
-                        // 通过ECharts API同步图例状态
+                        // Sync legend state via ECharts API
                         if (!allChecked) {
-                            // 全选：显示图例
+                            // Select all: show legend
                             chart.dispatchAction({
                                 type: 'legendSelect',
                                 name: nickname,
                             });
                         } else {
-                            // 取消全选：隐藏图例
+                            // Deselect all: hide legend
                             chart.dispatchAction({
                                 type: 'legendUnSelect',
                                 name: nickname,
@@ -2662,30 +2681,30 @@
                         }
                     });
 
-                    // 重置标志
+                    // Reset flag
                     setTimeout(() => {
                         isUpdatingFromLegend = false;
                     }, 200);
                 }
 
-                // 触发数据更新，重新渲染表格
+                // Trigger data update, re-render table
                 fetchData();
             }
 
-            // 清空所有昵称
+            // Clear all nicknames
             function clearNicknames() {
-                if (confirm('确定要清空所有自定义昵称吗？')) {
+                if (confirm('Are you sure you want to clear all custom nicknames?')) {
                     userNicknames = {};
                     localStorage.setItem('userNicknames', JSON.stringify(userNicknames));
 
-                    // 清空控制面板中的所有昵称输入框
+                    // Clear all nickname input boxes in control panel
                     document.querySelectorAll('.user-nickname-input').forEach((input) => {
                         input.value = '';
                     });
                 }
             }
 
-            // 切换控制面板弹窗显示/隐藏
+            // Toggle control panel modal show/hide
             function toggleControlsModal() {
                 const modal = document.getElementById('controlsModal');
                 const isVisible = modal.style.display === 'block';
@@ -2697,7 +2716,7 @@
                 }
             }
 
-            // 切换控制面板弹窗显示/隐藏
+            // Toggle history modal show/hide
             function toggleHistoryModal() {
                 const modal = document.getElementById('historyModal');
                 const iframe = document.getElementById('historyIframe');
@@ -2712,7 +2731,7 @@
                 }
             }
 
-            // 点击弹窗外部区域关闭弹窗
+            // Click outside modal area to close modal
             window.onclick = function (event) {
                 const controlsModal = document.getElementById('controlsModal');
                 const columnModal = document.getElementById('columnSettingsModal');
@@ -2729,7 +2748,7 @@
                 }
             };
 
-            // 列显示设置相关功能
+            // Column display settings related functions
             let columnVisibility = {
                 uid: true,
                 nickname: true,
@@ -2757,7 +2776,7 @@
                 actions: true,
             };
 
-            // 从localStorage加载列显示设置
+            // Load column display settings from localStorage
             function loadColumnSettings() {
                 const saved = localStorage.getItem('columnVisibility');
                 if (saved) {
@@ -2767,12 +2786,12 @@
                 applyColumnVisibility();
             }
 
-            // 保存列显示设置到localStorage
+            // Save column display settings to localStorage
             function saveColumnSettings() {
                 localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility));
             }
 
-            // 更新复选框状态
+            // Update checkbox states
             function updateColumnCheckboxes() {
                 Object.keys(columnVisibility).forEach((column) => {
                     const checkbox = document.querySelector(`#col-${column}`);
@@ -2782,100 +2801,100 @@
                 });
             }
 
-            // 打开列设置弹窗
+            // Open column settings modal
             function openColumnSettings() {
                 generateColumnSettingsContent();
                 document.getElementById('columnSettingsModal').style.display = 'flex';
             }
 
-            // 关闭列设置弹窗
+            // Close column settings modal
             function closeColumnSettings() {
                 document.getElementById('columnSettingsModal').style.display = 'none';
             }
 
-            // 动态生成列设置内容
+            // Dynamically generate column settings content
             function generateColumnSettingsContent() {
                 const modal = document.getElementById('columnSettingsModal');
                 const content = modal.querySelector('.column-settings-content');
 
-                // 清除现有内容（保留标题）
+                // Clear existing content (keep title)
                 const existingGroups = content.querySelectorAll('.column-group');
                 existingGroups.forEach((group) => group.remove());
 
                 const isSimpleMode = document.body.classList.contains('simple-mode');
 
-                // 基础信息组
-                const baseGroup = createColumnGroup('🔰 基础信息', [
-                    { id: 'uid', label: '角色ID', column: 'uid' },
-                    { id: 'nickname', label: '角色昵称', column: 'nickname' },
-                    { id: 'job', label: '职业', column: 'job' },
-                    { id: 'score', label: '评分', column: 'score' },
+                // Basic Information group
+                const baseGroup = createColumnGroup('🔰 Basic Information', [
+                    { id: 'uid', label: 'Character ID', column: 'uid' },
+                    { id: 'nickname', label: 'Character Name', column: 'nickname' },
+                    { id: 'job', label: 'Class', column: 'job' },
+                    { id: 'score', label: 'Score', column: 'score' },
                     { id: 'hp', label: 'HP', column: 'hp' },
-                    { id: 'takenDamage', label: '承伤', column: 'takenDamage' },
-                    { id: 'deadCount', label: '死亡', column: 'deadCount' },
-                    { id: 'critRate', label: '暴击率', column: 'critRate' },
-                    { id: 'luckyRate', label: '幸运率', column: 'luckyRate' },
+                    { id: 'takenDamage', label: 'Damage Taken', column: 'takenDamage' },
+                    { id: 'deadCount', label: 'Deaths', column: 'deadCount' },
+                    { id: 'critRate', label: 'Crit Rate', column: 'critRate' },
+                    { id: 'luckyRate', label: 'Lucky Strike Rate', column: 'luckyRate' },
                 ]);
                 content.appendChild(baseGroup);
 
-                // 根据当前数据组显示相应的列设置
+                // Display corresponding column settings based on current data group
                 if (currentDataGroup === 'damage' || currentDataGroup === 'all') {
-                    // 伤害数据组
-                    const damageOptions = [{ id: 'totalDamage', label: '总伤害', column: 'totalDamage' }];
+                    // Damage Data group
+                    const damageOptions = [{ id: 'totalDamage', label: 'Total Damage', column: 'totalDamage' }];
 
                     if (!isSimpleMode) {
                         damageOptions.push(
-                            { id: 'pureCrit', label: '纯暴击', column: 'pureCrit' },
-                            { id: 'pureLucky', label: '纯幸运', column: 'pureLucky' },
-                            { id: 'critLucky', label: '暴击幸运', column: 'critLucky' },
+                            { id: 'pureCrit', label: 'Only Crit', column: 'pureCrit' },
+                            { id: 'pureLucky', label: 'Only Lucky', column: 'pureLucky' },
+                            { id: 'critLucky', label: 'Crit & Lucky Strike', column: 'critLucky' },
                         );
                     }
 
-                    const damageGroup = createColumnGroup('⚔️ 伤害数据', damageOptions);
+                    const damageGroup = createColumnGroup('⚔️ Damage Data', damageOptions);
                     content.appendChild(damageGroup);
 
-                    // DPS数据组
-                    const dpsGroup = createColumnGroup('⚡ DPS数据', [
-                        { id: 'realtimeDps', label: '瞬时DPS', column: 'realtimeDps' },
-                        { id: 'realtimeDpsMax', label: '最大瞬时', column: 'realtimeDpsMax' },
-                        { id: 'dps', label: '总DPS', column: 'dps' },
+                    // DPS Data group
+                    const dpsGroup = createColumnGroup('⚡ DPS Data', [
+                        { id: 'realtimeDps', label: 'Real-time DPS', column: 'realtimeDps' },
+                        { id: 'realtimeDpsMax', label: 'Peak DPS', column: 'realtimeDpsMax' },
+                        { id: 'dps', label: 'Total DPS', column: 'dps' },
                     ]);
                     content.appendChild(dpsGroup);
                 }
 
                 if (currentDataGroup === 'healing' || currentDataGroup === 'all') {
-                    // 治疗数据组
-                    const healingOptions = [{ id: 'totalHealing', label: '总治疗', column: 'totalHealing' }];
+                    // Healing Data group
+                    const healingOptions = [{ id: 'totalHealing', label: 'Total Healing', column: 'totalHealing' }];
 
                     if (!isSimpleMode) {
                         healingOptions.push(
-                            { id: 'healingPureCrit', label: '纯暴击', column: 'healingPureCrit' },
-                            { id: 'healingPureLucky', label: '纯幸运', column: 'healingPureLucky' },
-                            { id: 'healingCritLucky', label: '暴击幸运', column: 'healingCritLucky' },
+                            { id: 'healingPureCrit', label: 'Only Crit', column: 'healingPureCrit' },
+                            { id: 'healingPureLucky', label: 'Only Lucky  Strike', column: 'healingPureLucky' },
+                            { id: 'healingCritLucky', label: 'Crit & Lucky Strike', column: 'healingCritLucky' },
                         );
                     }
 
-                    const healingGroup = createColumnGroup('❤️ 治疗数据', healingOptions);
+                    const healingGroup = createColumnGroup('❤️ Healing Data', healingOptions);
                     content.appendChild(healingGroup);
 
-                    // HPS数据组
-                    const hpsGroup = createColumnGroup('💚 HPS数据', [
-                        { id: 'realtimeHps', label: '瞬时HPS', column: 'realtimeHps' },
-                        { id: 'realtimeHpsMax', label: '最大瞬时', column: 'realtimeHpsMax' },
-                        { id: 'hps', label: '总HPS', column: 'hps' },
+                    // HPS Data group
+                    const hpsGroup = createColumnGroup('💚 HPS Data', [
+                        { id: 'realtimeHps', label: 'Real-time HPS', column: 'realtimeHps' },
+                        { id: 'realtimeHpsMax', label: 'Peak HPS', column: 'realtimeHpsMax' },
+                        { id: 'hps', label: 'Total HPS', column: 'hps' },
                     ]);
                     content.appendChild(hpsGroup);
                 }
 
-                // 其他组
-                const otherGroup = createColumnGroup('🔧 其他', [{ id: 'actions', label: '操作', column: 'actions' }]);
+                // Other group
+                const otherGroup = createColumnGroup('🔧 Other', [{ id: 'actions', label: 'Actions', column: 'actions' }]);
                 content.appendChild(otherGroup);
 
-                // 重新绑定事件
+                // Rebind events
                 initColumnSettings();
             }
 
-            // 创建列设置组
+            // Create column settings group
             function createColumnGroup(title, options) {
                 const group = document.createElement('div');
                 group.className = 'column-group';
@@ -2911,25 +2930,25 @@
                 return group;
             }
 
-            // 应用列显示设置
+            // Apply column display settings
             function applyColumnVisibility() {
                 const table = document.getElementById('damageTable');
                 if (!table) return;
 
-                // 基础信息列（rowspan=2）
+                // Basic Information columns (rowspan=2)
                 const baseColumns = [
-                    { column: 'uid', selector: 'th[title="角色唯一标识符"]' },
-                    { column: 'nickname', selector: 'th[title="角色昵称/自定义昵称"]' },
-                    { column: 'job', selector: 'th[title="角色职业"]' },
-                    { column: 'score', selector: 'th[title="角色评分"]' },
-                    { column: 'hp', selector: 'th[title="角色血量"]' },
-                    { column: 'takenDamage', selector: 'th[title="角色在战斗中受到的伤害"]' },
-                    { column: 'deadCount', selector: 'th[title="角色在战斗中死亡次数"]' },
-                    { column: 'critRate', selector: 'th[title="角色在战斗中的暴击伤害次数占总伤害次数的比例"]' },
-                    { column: 'luckyRate', selector: 'th[title="角色在战斗中的幸运伤害次数占总伤害次数的比例"]' },
+                    { column: 'uid', selector: 'th[title="Character Unique Identifier"]' },
+                    { column: 'nickname', selector: 'th[title="Character Nickname/Custom Name"]' },
+                    { column: 'job', selector: 'th[title="Character Class"]' },
+                    { column: 'score', selector: 'th[title="Character Score"]' },
+                    { column: 'hp', selector: 'th[title="Character Health"]' },
+                    { column: 'takenDamage', selector: 'th[title="Damage received by character in combat"]' },
+                    { column: 'deadCount', selector: 'th[title="Number of character deaths in combat"]' },
+                    { column: 'critRate', selector: 'th[title="Ratio of critical damage hits to total damage hits in combat"]' },
+                    { column: 'luckyRate', selector: 'th[title="Ratio of lucky damage hits to total damage hits in combat"]' },
                 ];
 
-                // 应用基础列的显示/隐藏
+                // Apply display/hide for basic columns
                 baseColumns.forEach(({ column, selector }) => {
                     const isVisible = columnVisibility[column];
                     const headerCell = table.querySelector(selector);
@@ -2942,12 +2961,12 @@
                     }
                 });
 
-                // 伤害相关列
+                // Damage related columns
                 const damageColumns = [
-                    { column: 'totalDamage', selector: 'th[title="角色在战斗中造成的总伤害"]' },
-                    { column: 'pureCrit', selector: 'th[title="角色在战斗中造成的非幸运的暴击伤害"]' },
-                    { column: 'pureLucky', selector: 'th[title="角色在战斗中造成的非暴击的幸运伤害"]' },
-                    { column: 'critLucky', selector: 'th[title="角色在战斗中造成的暴击的幸运伤害"]' },
+                    { column: 'totalDamage', selector: 'th[title="Total damage dealt by character in combat"]' },
+                    { column: 'pureCrit', selector: 'th[title="Non-lucky critical damage dealt by character in combat"]' },
+                    { column: 'pureLucky', selector: 'th[title="Non-critical lucky damage dealt by character in combat"]' },
+                    { column: 'critLucky', selector: 'th[title="Critical lucky damage dealt by character in combat"]' },
                 ];
 
                 damageColumns.forEach(({ column, selector }) => {
@@ -2962,11 +2981,15 @@
                     }
                 });
 
-                // DPS相关列
+                // DPS related columns
                 const dpsColumns = [
-                    { column: 'realtimeDps', selector: 'th[title="角色在战斗中的最近一秒造成的伤害"]' },
-                    { column: 'realtimeDpsMax', selector: 'th[title="角色在战斗中的最大瞬时DPS"]' },
-                    { column: 'dps', selector: 'th[title="角色在战斗中的总DPS（以第一次技能与最后一次技能之间的时间作为有效战斗时间计算）"]' },
+                    { column: 'realtimeDps', selector: 'th[title="Damage dealt by character in the last second of combat"]' },
+                    { column: 'realtimeDpsMax', selector: 'th[title="Maximum instantaneous DPS of character in combat"]' },
+                    {
+                        column: 'dps',
+                        selector:
+                            'th[title="Total DPS of character in combat (calculated using time between first and last skill as effective combat time)"]',
+                    },
                 ];
 
                 dpsColumns.forEach(({ column, selector }) => {
@@ -2981,12 +3004,12 @@
                     }
                 });
 
-                // 治疗相关列
+                // Healing related columns
                 const healingColumns = [
-                    { column: 'totalHealing', selector: 'th[title="角色在战斗中造成的总治疗量"]' },
-                    { column: 'healingPureCrit', selector: 'th[title="角色在战斗中造成的非幸运的暴击治疗量"]' },
-                    { column: 'healingPureLucky', selector: 'th[title="角色在战斗中造成的非暴击的幸运治疗量"]' },
-                    { column: 'healingCritLucky', selector: 'th[title="角色在战斗中造成的暴击的幸运治疗量"]' },
+                    { column: 'totalHealing', selector: 'th[title="Total healing done by character in combat"]' },
+                    { column: 'healingPureCrit', selector: 'th[title="Non-lucky critical healing done by character in combat"]' },
+                    { column: 'healingPureLucky', selector: 'th[title="Non-critical lucky healing done by character in combat"]' },
+                    { column: 'healingCritLucky', selector: 'th[title="Critical lucky healing done by character in combat"]' },
                 ];
 
                 healingColumns.forEach(({ column, selector }) => {
@@ -3001,11 +3024,15 @@
                     }
                 });
 
-                // HPS相关列
+                // HPS related columns
                 const hpsColumns = [
-                    { column: 'realtimeHps', selector: 'th[title="角色在战斗中的最近一秒造成的伤害和治疗量"]' },
-                    { column: 'realtimeHpsMax', selector: 'th[title="角色在战斗中的最大瞬时HPS"]' },
-                    { column: 'hps', selector: 'th[title="角色在战斗中的总HPS（以第一次技能与最后一次技能之间的时间作为有效战斗时间计算）"]' },
+                    { column: 'realtimeHps', selector: 'th[title="Damage and healing done by character in the last second of combat"]' },
+                    { column: 'realtimeHpsMax', selector: 'th[title="Maximum instantaneous HPS of character in combat"]' },
+                    {
+                        column: 'hps',
+                        selector:
+                            'th[title="Total HPS of character in combat (calculated using time between first and last skill as effective combat time)"]',
+                    },
                 ];
 
                 hpsColumns.forEach(({ column, selector }) => {
@@ -3020,9 +3047,9 @@
                     }
                 });
 
-                // 操作列
+                // Actions column
                 const actionsHeader = table.querySelector('th:last-child');
-                if (actionsHeader && actionsHeader.textContent.includes('操作')) {
+                if (actionsHeader && actionsHeader.textContent.includes('Actions')) {
                     if (columnVisibility.actions) {
                         actionsHeader.style.removeProperty('display');
                     } else {
@@ -3030,25 +3057,25 @@
                     }
                 }
 
-                // 应用表体单元格的显示/隐藏
+                // Apply display/hide for table body cells
                 applyBodyColumnVisibility();
 
-                // 更新colspan
+                // Update colspan
                 updateColspan();
             }
 
-            // 应用表体单元格的显示/隐藏
+            // Apply display/hide for table body cells
             function applyBodyColumnVisibility() {
                 const table = document.getElementById('damageTable');
                 if (!table) return;
 
-                // 获取所有表体行
+                // Get all table body rows
                 const rows = table.querySelectorAll('tbody tr');
 
                 rows.forEach((row) => {
                     const cells = row.querySelectorAll('td');
 
-                    // 基础信息列 (0-8)
+                    // Basic Information columns (0-8)
                     const baseCols = ['uid', 'nickname', 'job', 'score', 'hp', 'takenDamage', 'deadCount', 'critRate', 'luckyRate'];
                     baseCols.forEach((col, index) => {
                         if (cells[index]) {
@@ -3060,12 +3087,12 @@
                         }
                     });
 
-                    // 动态列需要根据当前数据组和简洁模式来确定位置
-                    let cellIndex = 9; // 从第10列开始
+                    // Dynamic columns need to determine position based on current data group and simple mode
+                    let cellIndex = 9; // Start from column 10
 
-                    // 处理伤害相关列
+                    // Handle damage related columns
                     if (currentDataGroup === 'damage' || currentDataGroup === 'all') {
-                        // 总伤害列
+                        // Total damage column
                         if (cells[cellIndex]) {
                             if (columnVisibility.totalDamage) {
                                 cells[cellIndex].style.removeProperty('display');
@@ -3075,7 +3102,7 @@
                         }
                         cellIndex++;
 
-                        // 详细伤害列（非简洁模式）
+                        // Detailed damage columns (non-simple mode)
                         if (!document.body.classList.contains('simple-mode')) {
                             const detailCols = ['pureCrit', 'pureLucky', 'critLucky'];
                             detailCols.forEach((col) => {
@@ -3090,7 +3117,7 @@
                             });
                         }
 
-                        // DPS列
+                        // DPS columns
                         const dpsCols = ['realtimeDps', 'realtimeDpsMax', 'dps'];
                         dpsCols.forEach((col) => {
                             if (cells[cellIndex]) {
@@ -3104,9 +3131,9 @@
                         });
                     }
 
-                    // 处理治疗相关列
+                    // Handle healing related columns
                     if (currentDataGroup === 'healing' || currentDataGroup === 'all') {
-                        // 总治疗列
+                        // Total healing column
                         if (cells[cellIndex]) {
                             if (columnVisibility.totalHealing) {
                                 cells[cellIndex].style.removeProperty('display');
@@ -3116,7 +3143,7 @@
                         }
                         cellIndex++;
 
-                        // 详细治疗列（非简洁模式）
+                        // Detailed healing columns (non-simple mode)
                         if (!document.body.classList.contains('simple-mode')) {
                             const healingDetailCols = ['healingPureCrit', 'healingPureLucky', 'healingCritLucky'];
                             healingDetailCols.forEach((col) => {
@@ -3131,7 +3158,7 @@
                             });
                         }
 
-                        // HPS列
+                        // HPS columns
                         const hpsCols = ['realtimeHps', 'realtimeHpsMax', 'hps'];
                         hpsCols.forEach((col) => {
                             if (cells[cellIndex]) {
@@ -3145,7 +3172,7 @@
                         });
                     }
 
-                    // 操作列（最后一列）
+                    // Actions column (last column)
                     const lastCell = cells[cells.length - 1];
                     if (lastCell) {
                         if (columnVisibility.actions) {
@@ -3157,12 +3184,12 @@
                 });
             }
 
-            // 更新表头的colspan
+            // Update header colspan
             function updateColspan() {
                 const table = document.getElementById('damageTable');
                 if (!table) return;
 
-                // 计算各组可见列数
+                // Calculate visible column count for each group
                 const damageMainVisible = ['totalDamage', 'pureCrit', 'pureLucky', 'critLucky'].filter((col) => columnVisibility[col]).length;
                 const dpsVisible = ['realtimeDps', 'realtimeDpsMax', 'dps'].filter((col) => columnVisibility[col]).length;
                 const healingMainVisible = ['totalHealing', 'healingPureCrit', 'healingPureLucky', 'healingCritLucky'].filter(
@@ -3170,7 +3197,7 @@
                 ).length;
                 const hpsVisible = ['realtimeHps', 'realtimeHpsMax', 'hps'].filter((col) => columnVisibility[col]).length;
 
-                // 更新colspan
+                // Update colspan
                 const damageMainHeader = table.querySelector('.damage-main-col');
                 const dpsHeader = table.querySelector('.dps-col');
                 const healingMainHeader = table.querySelector('.healing-main-col');
@@ -3213,7 +3240,7 @@
                 }
             }
 
-            // 列设置复选框变化事件
+            // Column settings checkbox change event
             function initColumnSettings() {
                 document.querySelectorAll('#columnSettingsModal input[type="checkbox"]').forEach((checkbox) => {
                     checkbox.addEventListener('change', function () {
@@ -3225,13 +3252,13 @@
                 });
             }
 
-            // 初始化列设置
+            // Initialize column settings
             document.addEventListener('DOMContentLoaded', function () {
                 loadColumnSettings();
                 initColumnSettings();
             });
 
-            // 键盘ESC键关闭弹窗
+            // Close modal with ESC key
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape') {
                     const controlsModal = document.getElementById('controlsModal');
@@ -3248,7 +3275,7 @@
                 }
             });
 
-            // 初始化
+            // Initialize
             function initialize() {
                 document.getElementById('appTitle').innerText += ` V${CURRENT_VERSION}`;
 
@@ -3260,29 +3287,29 @@
                 initPauseState();
                 initChart();
 
-                // 显示初始连接状态
-                showServerStatus('reconnecting', '🔄 正在初始化连接...', false);
+                // Display initial connection status
+                showServerStatus('reconnecting', '🔄 Initializing connection...', false);
 
-                // 初始化WebSocket连接
+                // Initialize WebSocket connection
                 initWebSocket();
 
-                // 启动WebSocket连接监控
+                // Start WebSocket connection monitoring
                 monitorWebSocketConnection();
 
-                // 只在初始化时获取一次数据，后续通过WebSocket接收
+                // Only fetch data once during initialization, subsequent data received via WebSocket
                 fetchData();
 
-                // 检查版本更新（延迟3秒执行，避免影响页面加载）
+                // Check for version updates (delayed 3 seconds to avoid affecting page load)
                 setTimeout(() => {
                     checkForUpdates();
                     setInterval(checkForUpdates, 60000);
                 }, 3000);
 
-                // 添加事件委托处理技能按钮点击
+                // Add event delegation for skill button clicks
                 const damageTable = document.getElementById('damageTable');
                 if (damageTable) {
                     damageTable.addEventListener('click', function (event) {
-                        // 处理技能按钮点击
+                        // Handle skill button clicks
                         if (event.target.classList.contains('skill-btn') || event.target.closest('.skill-btn')) {
                             const button = event.target.classList.contains('skill-btn') ? event.target : event.target.closest('.skill-btn');
                             const userId = button.getAttribute('data-user-id');
@@ -3290,7 +3317,7 @@
                                 showSkillAnalysis(parseInt(userId));
                             }
                         }
-                        // 处理复制按钮点击
+                        // Handle copy button clicks
                         else if (event.target.classList.contains('copy-btn') || event.target.closest('.copy-btn')) {
                             const button = event.target.classList.contains('copy-btn') ? event.target : event.target.closest('.copy-btn');
                             const userId = button.getAttribute('data-user-id');
@@ -3302,7 +3329,7 @@
                 }
             }
 
-            // 等待DOM加载完成后初始化
+            // Wait for DOM to load before initialization
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', initialize);
             } else {
@@ -3322,15 +3349,15 @@
             document.addEventListener('DOMContentLoaded', updateTableStickyHeader);
         </script>
 
-        <!-- 列设置弹窗 -->
+        <!-- Column Settings Modal -->
         <div id="columnSettingsModal" class="column-settings-modal">
             <div class="column-settings-content">
                 <div class="column-settings-header">
-                    <div class="column-settings-title">⚙️ 表格设置</div>
+                    <div class="column-settings-title">⚙️ Table Settings</div>
                     <button class="close-btn" onclick="closeColumnSettings()">&times;</button>
                 </div>
 
-                <!-- 内容将通过 JavaScript 动态生成 -->
+                <!-- Content will be dynamically generated through JavaScript -->
             </div>
         </div>
     </body>

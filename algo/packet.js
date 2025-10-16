@@ -4,7 +4,7 @@ const Long = require('long');
 const pbjs = require('protobufjs/minimal');
 const fs = require('fs');
 
-const monsterNames = require('../tables/monster_names.json');
+const monsterNames = require('../tables/monster_names_en.json');
 
 class BinaryReader {
     constructor(buffer, offset = 0) {
@@ -116,17 +116,17 @@ const AttrType = {
 };
 
 const ProfessionType = {
-    雷影剑士: 1,
-    冰魔导师: 2,
+    Stormblade: 1,
+    FrostMage: 2,
     涤罪恶火_战斧: 3,
-    青岚骑士: 4,
-    森语者: 5,
+    WindKnight: 4,
+    VerdantOracle: 5,
     雷霆一闪_手炮: 8,
-    巨刃守护者: 9,
+    HeavyGuardian: 9,
     暗灵祈舞_仪刀_仪仗: 10,
-    神射手: 11,
-    神盾骑士: 12,
-    灵魂乐手: 13,
+    Marksman: 11,
+    ShieldKnight: 12,
+    BeatPerformer: 13,
 };
 
 const EDamageSource = {
@@ -153,28 +153,28 @@ const EDamageProperty = {
 
 const getProfessionNameFromId = (professionId) => {
     switch (professionId) {
-        case ProfessionType.雷影剑士:
-            return '雷影剑士';
-        case ProfessionType.冰魔导师:
-            return '冰魔导师';
+        case ProfessionType.Stormblade:
+            return 'Stormblade';
+        case ProfessionType.FrostMage:
+            return 'Frost Mage';
         case ProfessionType.涤罪恶火_战斧:
             return '涤罪恶火·战斧';
-        case ProfessionType.青岚骑士:
-            return '青岚骑士';
-        case ProfessionType.森语者:
-            return '森语者';
+        case ProfessionType.WindKnight:
+            return 'Wind Knight';
+        case ProfessionType.VerdantOracle:
+            return 'Verdant Oracle';
         case ProfessionType.雷霆一闪_手炮:
             return '雷霆一闪·手炮';
-        case ProfessionType.巨刃守护者:
-            return '巨刃守护者';
+        case ProfessionType.HeavyGuardian:
+            return 'Heavy Guardian';
         case ProfessionType.暗灵祈舞_仪刀_仪仗:
             return '暗灵祈舞·仪刀/仪仗';
-        case ProfessionType.神射手:
-            return '神射手';
-        case ProfessionType.神盾骑士:
-            return '神盾骑士';
-        case ProfessionType.灵魂乐手:
-            return '灵魂乐手';
+        case ProfessionType.Marksman:
+            return 'Marksman';
+        case ProfessionType.ShieldKnight:
+            return 'Shield Knight';
+        case ProfessionType.BeatPerformer:
+            return 'Beat Performer';
         default:
             return '';
     }
@@ -183,27 +183,27 @@ const getProfessionNameFromId = (professionId) => {
 const getDamageElement = (damageProperty) => {
     switch (damageProperty) {
         case EDamageProperty.General:
-            return '⚔️物';
+            return '⚔️General';
         case EDamageProperty.Fire:
-            return '🔥火';
+            return '🔥Fire';
         case EDamageProperty.Water:
-            return '❄️冰';
+            return '❄️Water';
         case EDamageProperty.Electricity:
-            return '⚡雷';
+            return '⚡Electricity';
         case EDamageProperty.Wood:
-            return '🍀森';
+            return '🍀Wood';
         case EDamageProperty.Wind:
-            return '💨风';
+            return '💨Wind';
         case EDamageProperty.Rock:
-            return '⛰️岩';
+            return '⛰️Rock';
         case EDamageProperty.Light:
-            return '🌟光';
+            return '🌟Light';
         case EDamageProperty.Dark:
-            return '🌑暗';
+            return '🌑Dark';
         case EDamageProperty.Count:
             return '❓？'; // 未知
         default:
-            return '⚔️物';
+            return '⚔️Unknown';
     }
 };
 
@@ -644,9 +644,9 @@ class PacketProcessor {
                     break;
                 case AttrType.AttrId:
                     const attrId = reader.int32();
-                    const name = monsterNames[attrId];
+                    const name = monsterNames[attrId] + ' (' + attrId + ')';
                     if (name) {
-                        this.logger.info(`Found moster name ${name} for id ${enemyUid}`);
+                        this.logger.info(`Found monster name ${name} for id ${enemyUid}`);
                         this.userDataManager.enemyCache.name.set(enemyUid, name);
                     }
                     break;

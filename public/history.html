@@ -1,55 +1,55 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>星痕共鸣历史战斗数据</title>
+        <title>Historical Combat Data</title>
         <script src="echarts.min.js"></script>
         <link rel="stylesheet" type="text/css" href="css/style.css" />
     </head>
 
     <body>
-        <!-- 技能统计弹窗 -->
+        <!-- Skill Statistics Modal -->
         <div id="skillModal" class="skill-modal">
             <div class="skill-modal-content" style="max-width: 70vw; max-height: 95vh; margin: 2% auto">
                 <div class="skill-modal-header" style="padding: 0px 25px">
                     <h2 class="skill-modal-title">
                         <i class="icon">📊</i>
-                        <span id="skillUserName">技能参与统计</span>
+                        <span id="skillUserName">Skill Participation Statistics</span>
                     </h2>
                     <span class="skill-modal-close" onclick="closeSkillModal()">&times;</span>
                 </div>
                 <div class="skill-modal-body" style="max-height: calc(95vh - 110px)">
                     <div class="skill-user-info">
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">用户ID</div>
+                            <div class="skill-user-info-label">User ID</div>
                             <div class="skill-user-info-value" id="skillUserId">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">角色昵称</div>
+                            <div class="skill-user-info-label">Character Name</div>
                             <div class="skill-user-info-value" id="skillUserNickname">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">职业</div>
+                            <div class="skill-user-info-label">Class</div>
                             <div class="skill-user-info-value" id="skillUserProfession">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">战力评分</div>
+                            <div class="skill-user-info-label">Combat Score</div>
                             <div class="skill-user-info-value" id="fightPoint">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">最大HP</div>
+                            <div class="skill-user-info-label">Max HP</div>
                             <div class="skill-user-info-value" id="maxHp">-</div>
                         </div>
                         <div class="skill-user-info-item">
-                            <div class="skill-user-info-label">技能数量</div>
+                            <div class="skill-user-info-label">Skill Count</div>
                             <div class="skill-user-info-value" id="skillCount">-</div>
                         </div>
                     </div>
 
                     <div class="skill-view-toggle">
                         <div class="skill-view-toggle-buttons">
-                            <button class="skill-view-btn active" data-view="damage" onclick="switchSkillView('damage')">伤害技能</button>
-                            <button class="skill-view-btn" data-view="healing" onclick="switchSkillView('healing')">治疗技能</button>
+                            <button class="skill-view-btn active" data-view="damage" onclick="switchSkillView('damage')">Damage Skills</button>
+                            <button class="skill-view-btn" data-view="healing" onclick="switchSkillView('healing')">Healing Skills</button>
                         </div>
                     </div>
 
@@ -62,15 +62,15 @@
                         <table class="skill-table" id="skillTable">
                             <thead>
                                 <tr>
-                                    <th>技能名称</th>
-                                    <th>元素</th>
-                                    <th>占比</th>
-                                    <th>总数值</th>
-                                    <th>次数</th>
-                                    <th>暴击率</th>
-                                    <th>幸运触发率</th>
-                                    <th>暴击数值</th>
-                                    <th>普通数值</th>
+                                    <th>Skill Name</th>
+                                    <th>Element</th>
+                                    <th>Percentage</th>
+                                    <th>Total Value</th>
+                                    <th>Count</th>
+                                    <th>Crit Rate</th>
+                                    <th>Lucky Rate</th>
+                                    <th>Crit Value</th>
+                                    <th>Normal Value</th>
                                 </tr>
                             </thead>
                             <tbody id="skillTableBody"></tbody>
@@ -81,78 +81,88 @@
         </div>
 
         <div>
-            <label for="chooseTime" style="margin-right: 10px; font-weight: bold">时间:</label>
+            <label for="chooseTime" style="margin-right: 10px; font-weight: bold">Time:</label>
             <select
                 id="chooseTime"
                 onchange="updateTimeStamp()"
                 style="margin-right: 10px; padding: 8px 12px; font-size: 14px; border-radius: 5px; border: 1px solid #ddd; background-color: white"
             ></select>
-            <label for="sortSelect" style="margin-right: 10px; font-weight: bold">排序方式:</label>
+            <label for="sortSelect" style="margin-right: 10px; font-weight: bold">Sort by:</label>
             <select
                 id="sortSelect"
                 onchange="updateSortMode()"
                 style="padding: 8px 12px; font-size: 14px; border-radius: 5px; border: 1px solid #ddd; background-color: white"
             >
-                <option value="uid">按UID排序 (升序)</option>
-                <option value="fightPoint">按评分排序 (降序)</option>
-                <option value="takenDamage">按承伤排序 (降序)</option>
-                <option value="damage">按总伤害排序 (降序)</option>
-                <option value="dps">按总DPS排序 (降序)</option>
-                <option value="realtimeDpsMax">按最大瞬时DPS排序 (降序)</option>
-                <option value="healing">按总治疗排序 (降序)</option>
-                <option value="hps">按总HPS排序 (降序)</option>
-                <option value="realtimeHpsMax">按最大瞬时HPS排序 (降序)</option>
-                <option value="hp_min">按剩余HP排序 (升序)</option>
+                <option value="uid">Sort by UID (Ascending)</option>
+                <option value="fightPoint">Sort by Score (Descending)</option>
+                <option value="takenDamage">Sort by Damage Taken (Descending)</option>
+                <option value="damage">Sort by Total Damage (Descending)</option>
+                <option value="dps">Sort by Total DPS (Descending)</option>
+                <option value="realtimeDpsMax">Sort by Max Instant DPS (Descending)</option>
+                <option value="healing">Sort by Total Healing (Descending)</option>
+                <option value="hps">Sort by Total HPS (Descending)</option>
+                <option value="realtimeHpsMax">Sort by Max Instant HPS (Descending)</option>
+                <option value="hp_min">Sort by Remaining HP (Ascending)</option>
             </select>
         </div>
-        <!-- 数据组显示控制 -->
+        <!-- Data group display controls -->
         <div class="data-group-controls">
-            <button id="damageGroupBtn" class="data-group-button active" onclick="toggleDataGroup('damage')">⚔️ 伤害&DPS</button>
-            <button id="healingGroupBtn" class="data-group-button" onclick="toggleDataGroup('healing')">❤️ 治疗&HPS</button>
-            <button id="allGroupBtn" class="data-group-button" onclick="toggleDataGroup('all')">📊 全部数据</button>
-            <button id="hideInactiveBtn" class="data-group-button" onclick="toggleHideInactiveUsers()">👀 隐藏未参战</button>
-            <button class="data-group-button" onclick="openColumnSettings()">⚙️ 表格设置</button>
-            <button class="data-group-button" onclick="downloadFightLog()">📥 下载战斗日志</button>
+            <button id="damageGroupBtn" class="data-group-button active" onclick="toggleDataGroup('damage')">⚔️ Damage&DPS</button>
+            <button id="healingGroupBtn" class="data-group-button" onclick="toggleDataGroup('healing')">❤️ Healing&HPS</button>
+            <button id="allGroupBtn" class="data-group-button" onclick="toggleDataGroup('all')">📊 All Data</button>
+            <button id="hideInactiveBtn" class="data-group-button" onclick="toggleHideInactiveUsers()">👀 Hide Inactive</button>
+            <button class="data-group-button" onclick="openColumnSettings()">⚙️ Table Settings</button>
+            <button class="data-group-button" onclick="downloadFightLog()">📥 Download Fight Log</button>
         </div>
         <div class="table-container" style="max-height: calc(100vh - 140px)">
             <table id="damageTable">
                 <thead>
                     <tr>
-                        <th rowspan="2" title="角色唯一标识符">角色ID</th>
-                        <th rowspan="2" title="角色昵称/自定义昵称">角色昵称</th>
-                        <th rowspan="2" title="角色职业">职业</th>
-                        <th rowspan="2" title="角色评分">评分</th>
-                        <th rowspan="2" title="角色血量">HP</th>
-                        <th rowspan="2" title="角色在战斗中受到的伤害">承伤</th>
-                        <th rowspan="2" title="角色在战斗中死亡次数">死亡</th>
-                        <th rowspan="2" title="角色在战斗中的暴击伤害次数占总伤害次数的比例">暴击率</th>
-                        <th rowspan="2" title="角色在战斗中的幸运伤害次数占总伤害次数的比例">幸运率</th>
-                        <th class="damage-main-col" colspan="4">伤害</th>
-                        <th class="damage-simple-col" style="display: none" colspan="1">伤害</th>
+                        <th rowspan="2" title="Character Unique Identifier">Character ID</th>
+                        <th rowspan="2" title="Character Nickname/Custom Name">Character Name</th>
+                        <th rowspan="2" title="Character Class">Class</th>
+                        <th rowspan="2" title="Character Score">Score</th>
+                        <th rowspan="2" title="Character Health">HP</th>
+                        <th rowspan="2" title="Damage received by character in combat">Damage Taken</th>
+                        <th rowspan="2" title="Number of character deaths in combat">Deaths</th>
+                        <th rowspan="2" title="Ratio of critical damage hits to total damage hits in combat">Crit Rate</th>
+                        <th rowspan="2" title="Ratio of lucky damage hits to total damage hits in combat">Lucky Rate</th>
+                        <th class="damage-main-col" colspan="4">Damage</th>
+                        <th class="damage-simple-col" style="display: none" colspan="1">Damage</th>
                         <th class="dps-col" colspan="3">DPS</th>
-                        <th class="healing-main-col" colspan="4">治疗</th>
-                        <th class="healing-simple-col" style="display: none" colspan="1">治疗</th>
+                        <th class="healing-main-col" colspan="4">Healing</th>
+                        <th class="healing-simple-col" style="display: none" colspan="1">Healing</th>
                         <th class="hps-col" colspan="3">HPS</th>
-                        <th rowspan="2">操作</th>
+                        <th rowspan="2">Actions</th>
                     </tr>
                     <tr>
-                        <th class="damage-cols" title="角色在战斗中造成的总伤害">总伤害</th>
-                        <th class="damage-detail-cols" title="角色在战斗中造成的非幸运的暴击伤害">纯暴击</th>
-                        <th class="damage-detail-cols" title="角色在战斗中造成的非暴击的幸运伤害">纯幸运</th>
-                        <th class="damage-detail-cols" title="角色在战斗中造成的暴击的幸运伤害">暴击幸运</th>
-                        <th class="dps-cols" title="角色在战斗中的最近一秒造成的伤害">瞬时DPS</th>
-                        <th class="dps-cols" title="角色在战斗中的最大瞬时DPS">最大瞬时</th>
-                        <th class="dps-cols" title="角色在战斗中的总DPS（以第一次技能与最后一次技能之间的时间作为有效战斗时间计算）">总DPS</th>
-                        <th class="healing-cols" title="角色在战斗中造成的总治疗量">总治疗</th>
-                        <th class="healing-detail-cols" title="角色在战斗中造成的非幸运的暴击治疗量">纯暴击</th>
-                        <th class="healing-detail-cols" title="角色在战斗中造成的非暴击的幸运治疗量">纯幸运</th>
-                        <th class="healing-detail-cols" title="角色在战斗中造成的暴击的幸运治疗量">暴击幸运</th>
-                        <th class="hps-cols" title="角色在战斗中的最近一秒造成的伤害和治疗量">瞬时HPS</th>
-                        <th class="hps-cols" title="角色在战斗中的最大瞬时HPS">最大瞬时</th>
-                        <th class="hps-cols" title="角色在战斗中的总HPS（以第一次技能与最后一次技能之间的时间作为有效战斗时间计算）">总HPS</th>
+                        <th class="damage-cols" title="Total damage dealt by character in combat">Total Damage</th>
+                        <th class="damage-detail-cols" title="Non-lucky critical damage dealt by character in combat">Pure Crit</th>
+                        <th class="damage-detail-cols" title="Non-critical lucky damage dealt by character in combat">Pure Lucky</th>
+                        <th class="damage-detail-cols" title="Critical lucky damage dealt by character in combat">Crit Lucky</th>
+                        <th class="dps-cols" title="Damage dealt by character in the last second of combat">Real-time DPS</th>
+                        <th class="dps-cols" title="Maximum instantaneous DPS of character in combat">Peak DPS</th>
+                        <th
+                            class="dps-cols"
+                            title="Total DPS of character in combat (calculated using time between first and last skill as effective combat time)"
+                        >
+                            Total DPS
+                        </th>
+                        <th class="healing-cols" title="Total healing done by character in combat">Total Healing</th>
+                        <th class="healing-detail-cols" title="Non-lucky critical healing done by character in combat">Pure Crit</th>
+                        <th class="healing-detail-cols" title="Non-critical lucky healing done by character in combat">Pure Lucky</th>
+                        <th class="healing-detail-cols" title="Critical lucky healing done by character in combat">Crit Lucky</th>
+                        <th class="hps-cols" title="Damage and healing done by character in the last second of combat">Real-time HPS</th>
+                        <th class="hps-cols" title="Maximum instantaneous HPS of character in combat">Peak HPS</th>
+                        <th
+                            class="hps-cols"
+                            title="Total HPS of character in combat (calculated using time between first and last skill as effective combat time)"
+                        >
+                            Total HPS
+                        </th>
                     </tr>
                 </thead>
-                <div class="no-data">🕗 请选择正确的时间以获取数据</div>
+                <div class="no-data">🕗 Please select the correct time to get data</div>
                 <tbody></tbody>
             </table>
         </div>
@@ -160,50 +170,50 @@
         <script>
             let historyTimeStamp = 0;
             let availableTimeStamps = [];
-            let currentSortMode = 'uid'; // 默认按UID排序
+            let currentSortMode = 'uid'; // Default sort by UID
             let userNicknames = JSON.parse(localStorage.getItem('userNicknames') || '{}');
 
-            // 数据组显示控制相关变量
+            // Data group display control related variables
             let currentDataGroup = 'damage';
             let lastVisiableUserArray = [];
 
-            // 隐藏未参战角色相关变量
+            // Hide inactive characters related variables
             let hideInactiveUsers = false;
 
-            // 新增技能分析功能
+            // New skill analysis functionality
             let skillChart1 = null;
             let skillChart2 = null;
             let currentSkillUserId = 0;
             let currentSkillData = null;
             let currentSkillView = 'damage';
             const SKILL_VIEW_LABELS = {
-                damage: '伤害',
-                healing: '治疗',
+                damage: 'Damage',
+                healing: 'Healing',
             };
             let skillChartsResizeListenerRegistered = false;
 
-            // 复制用户数据
+            // Copy user data
             function copyUserData(userId) {
                 const user = getUserFromArray(userId);
                 if (!user) {
-                    console.error('未找到用户数据');
+                    console.error('User data not found');
                     return;
                 }
 
                 const hasValidName = user.name && user.name.trim() !== '';
                 const nickname = userNicknames[userId] || (hasValidName ? user.name : '') || '';
-                const copyText = `${nickname}#${userId} 伤害:${user.total_damage.total} 治疗:${user.total_healing.total} DPS:${user.total_dps.toFixed(2)} HPS:${user.total_hps.toFixed(2)}`;
+                const copyText = `${nickname}#${userId} Damage:${user.total_damage.total} Healing:${user.total_healing.total} DPS:${user.total_dps.toFixed(2)} HPS:${user.total_hps.toFixed(2)}`;
 
-                // 复制昵称到剪贴板
+                // Copy nickname to clipboard
                 navigator.clipboard
                     .writeText(copyText)
                     .then(() => {
-                        // 显示复制成功提示
+                        // Show copy success notification
                         showCopySuccess();
                     })
                     .catch((err) => {
-                        console.error('复制失败:', err);
-                        // 降级方案：使用传统方法复制
+                        console.error('Copy failed:', err);
+                        // Fallback: use legacy copy method
                         try {
                             const textArea = document.createElement('textarea');
                             textArea.value = copyText;
@@ -213,14 +223,14 @@
                             document.body.removeChild(textArea);
                             showCopySuccess();
                         } catch (e) {
-                            console.error('降级复制方案也失败:', e);
+                            console.error('Fallback copy method also failed:', e);
                         }
                     });
             }
 
-            // 显示复制成功提示
+            // Show copy success notification
             function showCopySuccess() {
-                // 创建临时提示元素
+                // Create temporary notification element
                 const toast = document.createElement('div');
                 toast.style.cssText = `
                 position: fixed;
@@ -235,10 +245,10 @@
                 box-shadow: 0 2px 8px rgba(0,0,0,0.2);
                 animation: slideIn 0.3s ease-out;
             `;
-                toast.textContent = '✅ 已复制用户数据';
+                toast.textContent = '✅ User data copied';
                 document.body.appendChild(toast);
 
-                // 3秒后移除提示
+                // Remove prompt after 3 seconds
                 setTimeout(() => {
                     if (toast.parentNode) {
                         toast.parentNode.removeChild(toast);
@@ -246,7 +256,7 @@
                 }, 3000);
             }
 
-            // 显示技能分析弹窗
+            // Show skill analysis modal
             async function showSkillAnalysis(userId) {
                 currentSkillUserId = userId;
                 currentSkillView = 'damage';
@@ -256,17 +266,17 @@
                 const modal = document.getElementById('skillModal');
                 modal.style.display = 'block';
 
-                // 获取技能数据
+                // Get skill data
                 await fetchSkillData(userId);
             }
 
-            // 关闭技能弹窗
+            // Close skill modal
             function closeSkillModal() {
                 const modal = document.getElementById('skillModal');
                 modal.style.display = 'none';
                 currentSkillData = null;
 
-                // 销毁图表实例
+                // Destroy chart instances
                 if (skillChart1) {
                     skillChart1.dispose();
                     skillChart1 = null;
@@ -277,7 +287,7 @@
                 }
             }
 
-            // 获取技能数据
+            // Get skill data
             async function fetchSkillData(userId) {
                 try {
                     const response = await fetch(`/api/history/${historyTimeStamp}/skill/${userId}`);
@@ -286,24 +296,24 @@
                     if (data.code === 0) {
                         renderSkillData(data.data);
                     } else {
-                        console.error('获取技能数据失败:', data.msg);
+                        console.error('Failed to get skill data:', data.msg);
                     }
                 } catch (error) {
-                    console.error('获取技能数据失败:', error);
+                    console.error('Failed to get skill data:', error);
                 }
             }
 
-            // 渲染技能数据
+            // Render skill data
             function renderSkillData(skillData) {
                 const userInfo = getUserFromArray(skillData.uid);
 
-                // 更新用户信息
+                // Update user information
                 document.getElementById('skillUserId').textContent = skillData.uid;
-                document.getElementById('skillUserName').textContent = `${skillData.name || `UID:${skillData.uid}`} - 技能分析`;
+                document.getElementById('skillUserName').textContent = `${skillData.name || `UID:${skillData.uid}`} - Skill Analysis`;
                 document.getElementById('skillUserNickname').textContent = skillData.name;
-                document.getElementById('skillUserProfession').textContent = userInfo ? userInfo.profession || '未知' : '未知';
-                document.getElementById('fightPoint').textContent = userInfo ? userInfo.fightPoint || '未知' : '未知';
-                document.getElementById('maxHp').textContent = skillData.attr ? skillData.attr.max_hp || '未知' : '未知';
+                document.getElementById('skillUserProfession').textContent = userInfo ? userInfo.profession || 'Unknown' : 'Unknown';
+                document.getElementById('fightPoint').textContent = userInfo ? userInfo.fightPoint || 'Unknown' : 'Unknown';
+                document.getElementById('maxHp').textContent = skillData.attr ? skillData.attr.max_hp || 'Unknown' : 'Unknown';
 
                 currentSkillData = skillData;
 
@@ -312,7 +322,7 @@
             }
 
             function updateSkillDisplay() {
-                const typeLabel = SKILL_VIEW_LABELS[currentSkillView] || '技能';
+                const typeLabel = SKILL_VIEW_LABELS[currentSkillView] || 'Skill';
 
                 const tableBody = document.getElementById('skillTableBody');
                 const skillCountElement = document.getElementById('skillCount');
@@ -327,7 +337,7 @@
                         emptyRow.className = 'skill-empty-row';
                         const emptyCell = document.createElement('td');
                         emptyCell.colSpan = 10;
-                        emptyCell.textContent = `暂无${typeLabel}技能数据`;
+                        emptyCell.textContent = `No ${typeLabel} skill data available`;
                         emptyRow.appendChild(emptyCell);
                         tableBody.appendChild(emptyRow);
                     }
@@ -359,7 +369,7 @@
                     emptyRow.className = 'skill-empty-row';
                     const emptyCell = document.createElement('td');
                     emptyCell.colSpan = 10;
-                    emptyCell.textContent = `暂无${typeLabel}技能数据`;
+                    emptyCell.textContent = `No ${typeLabel} skill data available`;
                     emptyRow.appendChild(emptyCell);
                     tableBody.appendChild(emptyRow);
                     renderSkillCharts([], [], [], [], typeLabel);
@@ -370,20 +380,20 @@
                     .map(([skillId, skill]) => ({ skillId, skill }))
                     .sort((a, b) => Number(b.skill.totalDamage ?? 0) - Number(a.skill.totalDamage ?? 0));
 
-                // 为图表准备三组数据
-                const skillNames = []; // 用来存 displayName
+                // Prepare three sets of data for charts
+                const skillNames = []; // Store displayName
                 const damages = [];
                 const critRates = [];
                 const luckyRates = [];
                 const sortedSkillDamage = sortedSkills.reduce((sum, { skill }) => sum + Number(skill.totalDamage ?? 0), 0);
 
-                // 渲染表格 + 收集图表数据
+                // Render table + collect chart data
                 sortedSkills.forEach(({ skillId, skill }) => {
                     const name = skill.displayName || skillId;
                     const damageBreakdown = skill.damageBreakdown || {};
                     const critDamage = Number(damageBreakdown.critical || 0) + Number(damageBreakdown.crit_lucky || 0);
                     const normalDamage = Number(damageBreakdown.normal || 0) + Number(damageBreakdown.lucky || 0);
-                    //占比
+                    //Percentage
                     const percentage = sortedSkillDamage > 0 ? (Number(skill.totalDamage ?? 0) / sortedSkillDamage) * 100 : 0;
 
                     const row = document.createElement('tr');
@@ -400,7 +410,7 @@
                     `;
                     tableBody.appendChild(row);
 
-                    // 收集给图表的数据
+                    // Collect data for charts
                     skillNames.push(name);
                     damages.push(Number(skill.totalDamage ?? 0));
                     critRates.push(Number(skill.critRate ?? 0) * 100);
@@ -441,7 +451,7 @@
                 });
             }
 
-            // 渲染技能图表
+            // Render skill charts
             function renderSkillCharts(skillNames, damages, critRates, luckyRates, typeLabel) {
                 const damageChartEl = document.getElementById('skillDamageChart');
                 const critChartEl = document.getElementById('skillCritChart');
@@ -463,7 +473,7 @@
                 skillChart2 = echarts.init(critChartEl);
 
                 if (!Array.isArray(skillNames) || skillNames.length === 0) {
-                    const emptyText = `暂无${typeLabel}技能数据`;
+                    const emptyText = `No ${typeLabel} skill data available`;
                     const emptyGraphic = {
                         type: 'text',
                         left: 'center',
@@ -477,14 +487,14 @@
 
                     skillChart1.setOption({
                         title: {
-                            text: `${typeLabel}技能数值分布`,
+                            text: `${typeLabel} Skill Value Distribution`,
                             left: 'center',
                             textStyle: { color: '#e2e8f0' },
                         },
                         graphic: emptyGraphic,
                         series: [
                             {
-                                name: `${typeLabel}技能数值`,
+                                name: `${typeLabel} Skill Values`,
                                 type: 'pie',
                                 data: [],
                             },
@@ -493,7 +503,7 @@
 
                     skillChart2.setOption({
                         title: {
-                            text: `${typeLabel}技能暴击率与幸运触发率`,
+                            text: `${typeLabel} Skill Critical Rate & Lucky Trigger Rate`,
                             left: 'center',
                             textStyle: { color: '#e2e8f0' },
                         },
@@ -513,23 +523,23 @@
                 const allDamages = damages.reduce((a, b) => a + b, 0);
                 const otherDamages = Math.max(0, allDamages - topAllDamages);
 
-                // 构造前 5 的 data，并且都显示标签
+                // Build top 5 data with all labels displayed
                 const pieData = topNames.map((name, idx) => ({
                     value: topDamages[idx],
                     name,
                     label: {
-                        show: true, // 打开这一项的标签
-                        position: 'outside', // 放到扇区外侧
-                        formatter: '{b}\n{d}%', // 显示“名称 + 百分比”
+                        show: true, // Enable labels for this item
+                        position: 'outside', // Place outside the sector
+                        formatter: '{b}\n{d}%', // Show name and percentage
                     },
                     labelLine: {
-                        show: true, // 显示引导线
+                        show: true, // Show guide lines
                     },
                 }));
                 if (otherDamages > 0) {
                     pieData.push({
                         value: otherDamages,
-                        name: '其他',
+                        name: 'Others',
                         label: {
                             show: true,
                             position: 'outside',
@@ -541,10 +551,10 @@
                     });
                 }
 
-                // 技能数值分布图
+                // Skill value distribution chart
                 const damageOption = {
                     title: {
-                        text: `${typeLabel}技能数值分布`,
+                        text: `${typeLabel} Skill Value Distribution`,
                         left: 'center',
                         textStyle: { color: '#e2e8f0' },
                     },
@@ -563,7 +573,7 @@
                     },
                     series: [
                         {
-                            name: `${typeLabel}技能数值`,
+                            name: `${typeLabel} Skill Values`,
                             type: 'pie',
                             radius: ['40%', '70%'],
                             avoidLabelOverlap: false,
@@ -592,10 +602,10 @@
                     ],
                 };
 
-                // 暴击率/幸运触发率对比图
+                // Critical rate/Lucky trigger rate comparison chart
                 const critOption = {
                     title: {
-                        text: `${typeLabel}技能暴击率与幸运触发率`,
+                        text: `${typeLabel} Skill Critical Rate & Lucky Trigger Rate`,
                         left: 'center',
                         textStyle: { color: '#e2e8f0' },
                     },
@@ -607,7 +617,7 @@
                         textStyle: { color: '#ecf0f1' },
                     },
                     legend: {
-                        data: ['暴击率', '幸运触发率'],
+                        data: ['Critical Rate', 'Lucky Trigger Rate'],
                         bottom: 10,
                         textStyle: { color: '#cbd5e0' },
                     },
@@ -630,7 +640,7 @@
                     },
                     yAxis: {
                         type: 'value',
-                        name: '百分比',
+                        name: 'Percentage',
                         min: 0,
                         max: 100,
                         axisLine: { lineStyle: { color: '#7f8c8d' } },
@@ -639,13 +649,13 @@
                     },
                     series: [
                         {
-                            name: '暴击率',
+                            name: 'Critical Rate',
                             type: 'bar',
                             data: critRates,
                             itemStyle: { color: '#ff9966' },
                         },
                         {
-                            name: '幸运触发率',
+                            name: 'Lucky Trigger Rate',
                             type: 'bar',
                             data: luckyRates,
                             itemStyle: { color: '#93f9b9' },
@@ -658,43 +668,43 @@
                 ensureSkillChartsResizeListener();
             }
 
-            // 获取用户数据的辅助函数
+            // Helper function to get user data
             function getUserFromArray(userId) {
                 return currentUserArray.find((user) => user.id.toString() === userId.toString());
             }
 
-            // 判断角色是否未参与战斗
+            // Check if character did not participate in combat
             function isUserInactive(user) {
-                // 检查总伤害、总DPS、总HPS是否都为0
+                // Check if total damage, total DPS, total HPS are all 0
                 const totalDamage = user.total_damage?.total || 0;
                 const totalDps = user.total_dps || 0;
                 const totalHps = user.total_hps || 0;
 
-                // 检查暴击率和幸运率是否为NaN
+                // Check if critical rate and lucky rate are NaN
                 const critRate = user.total_count?.critical / user.total_count?.total;
                 const luckyRate = user.total_count?.lucky / user.total_count?.total;
 
                 return (totalDamage === 0 && totalDps === 0 && totalHps === 0) || (isNaN(critRate) && isNaN(luckyRate));
             }
 
-            // 切换隐藏未参战角色功能
+            // Toggle hide non-participating characters feature
             function toggleHideInactiveUsers() {
                 hideInactiveUsers = !hideInactiveUsers;
                 const btn = document.getElementById('hideInactiveBtn');
                 if (hideInactiveUsers) {
                     btn.classList.add('active');
-                    btn.innerHTML = '👀 已隐藏未参战';
+                    btn.innerHTML = '👀 Non-participants Hidden';
                 } else {
                     btn.classList.remove('active');
-                    btn.innerHTML = '👀 隐藏未参战';
+                    btn.innerHTML = '👀 Hide Non-participants';
                 }
 
-                // 重新处理当前数据
+                // Reprocess current data
                 if (currentUserArray && currentUserArray.length > 0) {
                     sortUserArray(currentUserArray);
                     let visibleUserArray = currentUserArray;
 
-                    // 如果启用了隐藏未参战角色，进一步过滤
+                    // If hide non-participating characters is enabled, further filter
                     if (hideInactiveUsers) {
                         visibleUserArray = visibleUserArray.filter((user) => !isUserInactive(user));
                     }
@@ -704,24 +714,24 @@
                 }
             }
 
-            // 处理数据更新（WebSocket和API通用）
+            // Handle data updates (common for WebSocket and API)
             function processDataUpdate(data, updateHistory = true) {
                 try {
-                    // 将数据转换为数组以便排序
+                    // Convert data to array for sorting
                     const userArray = Object.keys(data.user).map((id) => ({
                         id: Number(id),
                         ...data.user[id],
                     }));
 
-                    // 缓存当前用户数组
+                    // Cache current user array
                     currentUserArray = userArray;
 
-                    // 根据当前排序模式排序
+                    // Sort according to current sorting mode
                     sortUserArray(userArray);
 
                     let visibleUserArray = userArray;
 
-                    // 如果启用了隐藏未参战角色，进一步过滤
+                    // If hide non-participating characters is enabled, further filter
                     if (hideInactiveUsers) {
                         visibleUserArray = visibleUserArray.filter((user) => !isUserInactive(user));
                     }
@@ -729,23 +739,23 @@
                     lastVisiableUserArray = visibleUserArray;
                     updateTables(visibleUserArray);
                 } catch (err) {
-                    console.error('处理数据更新失败：', err);
+                    console.error('Failed to process data update:', err);
                 }
             }
 
-            // 生成表格行
+            // Generate table rows
             function updateTables(visibleUserArray) {
                 const damageTable = document.getElementById('damageTable').querySelector('tbody');
-                //获取damageTable里的所有行
+                //Get all rows in damageTable
                 let existingRows = damageTable.querySelectorAll('tr');
                 if (existingRows.length > visibleUserArray.length) {
-                    // 移除多余的行
+                    // Remove excess rows
                     for (let i = existingRows.length - 1; i >= visibleUserArray.length; i--) {
                         damageTable.removeChild(existingRows[i]);
                     }
                 }
                 if (existingRows.length < visibleUserArray.length) {
-                    // 添加新行
+                    // Add new rows
                     for (let i = existingRows.length; i < visibleUserArray.length; i++) {
                         const row = document.createElement('tr');
                         damageTable.appendChild(row);
@@ -762,13 +772,13 @@
 
                     const isSimpleMode = document.body.classList.contains('simple-mode');
 
-                    // 其他数据列
+                    // Other data columns
                     const otherCells = [
-                        user.profession || '未知',
+                        user.profession || 'Unknown',
                         Number(user.fightPoint).toLocaleString(),
-                        (user.hp ?? '未知').toLocaleString(),
+                        (user.hp ?? 'Unknown').toLocaleString(),
                         Number(user.taken_damage).toLocaleString(),
-                        user.dead_count ?? '未知',
+                        user.dead_count ?? 'Unknown',
                         `${(crit_rate * 100).toFixed(2)}%`,
                         `${(lucky_rate * 100).toFixed(2)}%`,
                     ];
@@ -803,23 +813,23 @@
                         );
                     }
                     let existingCells = row.querySelectorAll('td');
-                    //所需展示的列数
+                    //Number of columns to display
                     const requiredColumnCount = 3 + otherCells.length;
                     if (existingCells.length > requiredColumnCount) {
-                        // 移除多余的单元格
+                        // Remove excess cells
                         for (let j = existingCells.length - 1; j >= requiredColumnCount; j--) {
                             row.removeChild(existingCells[j]);
                         }
                     }
                     if (existingCells.length < requiredColumnCount) {
-                        // 添加新单元格
+                        // Add new cells
                         for (let j = existingCells.length; j < requiredColumnCount; j++) {
                             const cell = document.createElement('td');
                             row.appendChild(cell);
                         }
                     }
                     existingCells = row.querySelectorAll('td');
-                    // 更新单元格内容
+                    // Update cell content
                     existingCells.forEach((cell, index) => {
                         if (index < 2) return;
                         if (otherCells[index - 2] !== undefined) {
@@ -827,11 +837,11 @@
                         }
                     });
 
-                    // 角色ID列
+                    // Character ID column
                     const uidCell = existingCells[0];
                     uidCell.textContent = `${user.id}`;
 
-                    // 角色昵称列
+                    // Character nickname column
                     const nicknameCell = existingCells[1];
                     // Check if user.name is a non-empty string
                     const hasValidName = user.name && user.name.trim() !== '';
@@ -840,7 +850,7 @@
                     nicknameCell.textContent = nickname;
                     const operationCell = existingCells[existingCells.length - 1];
                     if (operationCell.querySelector('.skill-btn')) {
-                        // 如果已经存在技能按钮，则只更新用户ID
+                        // If skill button already exists, just update user ID
                         operationCell.querySelector('.skill-btn').setAttribute('data-user-id', user.id);
                         operationCell.querySelector('.copy-btn').setAttribute('data-user-id', user.id);
                     } else {
@@ -849,23 +859,23 @@
                         operationDiv.className = 'operation-div';
                         operationCell.appendChild(operationDiv);
 
-                        // 创建复制按钮
+                        // Create copy button
                         const copyButton = document.createElement('button');
                         copyButton.className = 'copy-btn';
-                        copyButton.innerHTML = '<i class="icon">📋</i> 复制数据';
+                        copyButton.innerHTML = '<i class="icon">📋</i> Copy Data';
                         copyButton.setAttribute('data-user-id', user.id);
                         operationDiv.appendChild(copyButton);
 
-                        // 创建技能按钮
+                        // Create skill button
                         const skillButton = document.createElement('button');
                         skillButton.className = 'skill-btn';
-                        skillButton.innerHTML = '<i class="icon">📊</i> 技能分析';
+                        skillButton.innerHTML = '<i class="icon">📊</i> Skill Analysis';
                         skillButton.setAttribute('data-user-id', user.id);
                         operationDiv.appendChild(skillButton);
                     }
                 }
                 updateTableStickyHeader();
-                // 应用列显示设置
+                // Apply column display settings
                 if (typeof applyColumnVisibility === 'function') {
                     applyColumnVisibility();
                 }
@@ -882,7 +892,7 @@
                     processDataUpdate(data);
                     document.querySelector('.no-data').style.display = 'none';
                 } catch (err) {
-                    console.error('获取数据失败：', err);
+                    console.error('Failed to get data:', err);
                     document.querySelector('.no-data').style.display = 'block';
                 }
             }
@@ -901,7 +911,7 @@
                     select.innerHTML = '';
                     const opt = document.createElement('option');
                     opt.value = 0;
-                    opt.textContent = '请选择时间以获取数据';
+                    opt.textContent = 'Please select a time to get data';
                     select.appendChild(opt);
                     availableTimeStamps.forEach((item) => {
                         const opt = document.createElement('option');
@@ -910,7 +920,7 @@
                         select.appendChild(opt);
                     });
                 } catch (err) {
-                    console.error('获取历史列表失败：', err);
+                    console.error('Failed to get history list:', err);
                 }
             }
 
@@ -924,10 +934,10 @@
                     console.log(data);
                     return {
                         timestamp: timestamp,
-                        name: `${data.data.maxHpMonster || ''} ${data.data.userCount}人 ${new Date(data.data.startTime).toLocaleString()} ➡ ${new Date(data.data.endTime).toLocaleString()}`,
+                        name: `${data.data.maxHpMonster || ''} ${data.data.userCount} players ${new Date(data.data.startTime).toLocaleString()} ➡ ${new Date(data.data.endTime).toLocaleString()}`,
                     };
                 } catch (err) {
-                    console.error('获取历史列表失败：', err);
+                    console.error('Failed to get history list:', err);
                 }
                 return {
                     timestamp: timestamp,
@@ -985,7 +995,7 @@
                 fetchData();
             }
 
-            // 页面加载时检查本地存储的主题偏好和排序偏好
+            // Check local storage for theme preferences and sorting preferences when page loads
             function initTheme() {
                 const isDarkMode = localStorage.getItem('darkMode') === 'true';
                 const body = document.body;
@@ -1003,21 +1013,21 @@
                 }
             }
 
-            // 初始化数据组显示模式
+            // Initialize data group display mode
             function initDataGroup() {
                 const savedDataGroup = localStorage.getItem('dataGroup') || 'damage';
                 currentDataGroup = savedDataGroup;
                 setDataGroup(savedDataGroup);
             }
 
-            // 切换数据组显示
+            // Toggle data group display
             function toggleDataGroup(group) {
                 currentDataGroup = group;
                 setDataGroup(group);
                 updateTables(lastVisiableUserArray);
             }
 
-            // 设置数据组显示状态
+            // Set data group display status
             function setDataGroup(group) {
                 const body = document.body;
                 const damageBtn = document.getElementById('damageGroupBtn');
@@ -1042,14 +1052,14 @@
                         if (allBtn) allBtn.classList.add('active');
                         break;
                     default:
-                        // 默认显示伤害&DPS
+                        // Default show damage & DPS
                         body.classList.add('hide-healing');
                         if (damageBtn) damageBtn.classList.add('active');
                         break;
                 }
             }
 
-            // 点击弹窗外部区域关闭弹窗
+            // Click outside modal area to close modal
             window.onclick = function (event) {
                 const columnModal = document.getElementById('columnSettingsModal');
                 const skillModal = document.getElementById('skillModal');
@@ -1060,7 +1070,7 @@
                 }
             };
 
-            // 列显示设置相关功能
+            // Column display settings related functions
             let columnVisibility = {
                 uid: true,
                 nickname: true,
@@ -1088,7 +1098,7 @@
                 actions: true,
             };
 
-            // 更新复选框状态
+            // Update checkbox status
             function updateColumnCheckboxes() {
                 Object.keys(columnVisibility).forEach((column) => {
                     const checkbox = document.querySelector(`#col-${column}`);
@@ -1102,100 +1112,100 @@
                 window.open(`/api/history/${historyTimeStamp}/download`);
             }
 
-            // 打开列设置弹窗
+            // Open column settings modal
             function openColumnSettings() {
                 generateColumnSettingsContent();
                 document.getElementById('columnSettingsModal').style.display = 'flex';
             }
 
-            // 关闭列设置弹窗
+            // Close column settings modal
             function closeColumnSettings() {
                 document.getElementById('columnSettingsModal').style.display = 'none';
             }
 
-            // 动态生成列设置内容
+            // Dynamically generate column settings content
             function generateColumnSettingsContent() {
                 const modal = document.getElementById('columnSettingsModal');
                 const content = modal.querySelector('.column-settings-content');
 
-                // 清除现有内容（保留标题）
+                // Clear existing content (keep title)
                 const existingGroups = content.querySelectorAll('.column-group');
                 existingGroups.forEach((group) => group.remove());
 
                 const isSimpleMode = document.body.classList.contains('simple-mode');
 
-                // 基础信息组
-                const baseGroup = createColumnGroup('🔰 基础信息', [
-                    { id: 'uid', label: '角色ID', column: 'uid' },
-                    { id: 'nickname', label: '角色昵称', column: 'nickname' },
-                    { id: 'job', label: '职业', column: 'job' },
-                    { id: 'score', label: '评分', column: 'score' },
+                // Basic information group
+                const baseGroup = createColumnGroup('🔰 Basic Information', [
+                    { id: 'uid', label: 'Character ID', column: 'uid' },
+                    { id: 'nickname', label: 'Character Name', column: 'nickname' },
+                    { id: 'job', label: 'Class', column: 'job' },
+                    { id: 'score', label: 'Score', column: 'score' },
                     { id: 'hp', label: 'HP', column: 'hp' },
-                    { id: 'takenDamage', label: '承伤', column: 'takenDamage' },
-                    { id: 'deadCount', label: '死亡', column: 'deadCount' },
-                    { id: 'critRate', label: '暴击率', column: 'critRate' },
-                    { id: 'luckyRate', label: '幸运率', column: 'luckyRate' },
+                    { id: 'takenDamage', label: 'Damage Taken', column: 'takenDamage' },
+                    { id: 'deadCount', label: 'Deaths', column: 'deadCount' },
+                    { id: 'critRate', label: 'Crit Rate', column: 'critRate' },
+                    { id: 'luckyRate', label: 'Lucky Strike Rate', column: 'luckyRate' },
                 ]);
                 content.appendChild(baseGroup);
 
-                // 根据当前数据组显示相应的列设置
+                // Show corresponding column settings based on current data group
                 if (currentDataGroup === 'damage' || currentDataGroup === 'all') {
-                    // 伤害数据组
-                    const damageOptions = [{ id: 'totalDamage', label: '总伤害', column: 'totalDamage' }];
+                    // Damage data group
+                    const damageOptions = [{ id: 'totalDamage', label: 'Total Damage', column: 'totalDamage' }];
 
                     if (!isSimpleMode) {
                         damageOptions.push(
-                            { id: 'pureCrit', label: '纯暴击', column: 'pureCrit' },
-                            { id: 'pureLucky', label: '纯幸运', column: 'pureLucky' },
-                            { id: 'critLucky', label: '暴击幸运', column: 'critLucky' },
+                            { id: 'pureCrit', label: 'Only Crit', column: 'pureCrit' },
+                            { id: 'pureLucky', label: 'Only Lucky Strike', column: 'pureLucky' },
+                            { id: 'critLucky', label: 'Crit & Lucky Strike', column: 'critLucky' },
                         );
                     }
 
-                    const damageGroup = createColumnGroup('⚔️ 伤害数据', damageOptions);
+                    const damageGroup = createColumnGroup('⚔️ Damage Data', damageOptions);
                     content.appendChild(damageGroup);
 
-                    // DPS数据组
-                    const dpsGroup = createColumnGroup('⚡ DPS数据', [
-                        { id: 'realtimeDps', label: '瞬时DPS', column: 'realtimeDps' },
-                        { id: 'realtimeDpsMax', label: '最大瞬时', column: 'realtimeDpsMax' },
-                        { id: 'dps', label: '总DPS', column: 'dps' },
+                    // DPS data group
+                    const dpsGroup = createColumnGroup('⚡ DPS Data', [
+                        { id: 'realtimeDps', label: 'Real-time DPS', column: 'realtimeDps' },
+                        { id: 'realtimeDpsMax', label: 'Peak DPS', column: 'realtimeDpsMax' },
+                        { id: 'dps', label: 'Total DPS', column: 'dps' },
                     ]);
                     content.appendChild(dpsGroup);
                 }
 
                 if (currentDataGroup === 'healing' || currentDataGroup === 'all') {
-                    // 治疗数据组
-                    const healingOptions = [{ id: 'totalHealing', label: '总治疗', column: 'totalHealing' }];
+                    // Health data group
+                    const healingOptions = [{ id: 'totalHealing', label: 'Total Healing', column: 'totalHealing' }];
 
                     if (!isSimpleMode) {
                         healingOptions.push(
-                            { id: 'healingPureCrit', label: '纯暴击', column: 'healingPureCrit' },
-                            { id: 'healingPureLucky', label: '纯幸运', column: 'healingPureLucky' },
-                            { id: 'healingCritLucky', label: '暴击幸运', column: 'healingCritLucky' },
+                            { id: 'healingPureCrit', label: 'Only Crit', column: 'healingPureCrit' },
+                            { id: 'healingPureLucky', label: 'Only Lucky Strike', column: 'healingPureLucky' },
+                            { id: 'healingCritLucky', label: 'Crit & Lucky Strike', column: 'healingCritLucky' },
                         );
                     }
 
-                    const healingGroup = createColumnGroup('❤️ 治疗数据', healingOptions);
+                    const healingGroup = createColumnGroup('❤️ Healing Data', healingOptions);
                     content.appendChild(healingGroup);
 
-                    // HPS数据组
-                    const hpsGroup = createColumnGroup('💚 HPS数据', [
-                        { id: 'realtimeHps', label: '瞬时HPS', column: 'realtimeHps' },
-                        { id: 'realtimeHpsMax', label: '最大瞬时', column: 'realtimeHpsMax' },
-                        { id: 'hps', label: '总HPS', column: 'hps' },
+                    // HPS data group
+                    const hpsGroup = createColumnGroup('💚 HPS Data', [
+                        { id: 'realtimeHps', label: 'Real-time HPS', column: 'realtimeHps' },
+                        { id: 'realtimeHpsMax', label: 'Peak HPS', column: 'realtimeHpsMax' },
+                        { id: 'hps', label: 'Total HPS', column: 'hps' },
                     ]);
                     content.appendChild(hpsGroup);
                 }
 
-                // 其他组
-                const otherGroup = createColumnGroup('🔧 其他', [{ id: 'actions', label: '操作', column: 'actions' }]);
+                // Other group
+                const otherGroup = createColumnGroup('🔧 Other', [{ id: 'actions', label: 'Actions', column: 'actions' }]);
                 content.appendChild(otherGroup);
 
-                // 重新绑定事件
+                // Rebind events
                 initColumnSettings();
             }
 
-            // 创建列设置组
+            // Create column settings group
             function createColumnGroup(title, options) {
                 const group = document.createElement('div');
                 group.className = 'column-group';
@@ -1231,25 +1241,25 @@
                 return group;
             }
 
-            // 应用列显示设置
+            // Apply column display settings
             function applyColumnVisibility() {
                 const table = document.getElementById('damageTable');
                 if (!table) return;
 
-                // 基础信息列（rowspan=2）
+                // Base information columns (rowspan=2)
                 const baseColumns = [
-                    { column: 'uid', selector: 'th[title="角色唯一标识符"]' },
-                    { column: 'nickname', selector: 'th[title="角色昵称/自定义昵称"]' },
-                    { column: 'job', selector: 'th[title="角色职业"]' },
-                    { column: 'score', selector: 'th[title="角色评分"]' },
-                    { column: 'hp', selector: 'th[title="角色血量"]' },
-                    { column: 'takenDamage', selector: 'th[title="角色在战斗中受到的伤害"]' },
-                    { column: 'deadCount', selector: 'th[title="角色在战斗中死亡次数"]' },
-                    { column: 'critRate', selector: 'th[title="角色在战斗中的暴击伤害次数占总伤害次数的比例"]' },
-                    { column: 'luckyRate', selector: 'th[title="角色在战斗中的幸运伤害次数占总伤害次数的比例"]' },
+                    { column: 'uid', selector: 'th[title="Character Unique Identifier"]' },
+                    { column: 'nickname', selector: 'th[title="Character Name/Custom Nickname"]' },
+                    { column: 'job', selector: 'th[title="Character Class"]' },
+                    { column: 'score', selector: 'th[title="Character Score"]' },
+                    { column: 'hp', selector: 'th[title="Character Health Points"]' },
+                    { column: 'takenDamage', selector: 'th[title="Damage Taken by Character in Combat"]' },
+                    { column: 'deadCount', selector: 'th[title="Number of Character Deaths in Combat"]' },
+                    { column: 'critRate', selector: 'th[title="Ratio of Critical Damage Instances to Total Damage Instances"]' },
+                    { column: 'luckyRate', selector: 'th[title="Ratio of Lucky Strike Damage Instances to Total Damage Instances"]' },
                 ];
 
-                // 应用基础列的显示/隐藏
+                // Apply base column show/hide
                 baseColumns.forEach(({ column, selector }) => {
                     const isVisible = columnVisibility[column];
                     const headerCell = table.querySelector(selector);
@@ -1262,12 +1272,12 @@
                     }
                 });
 
-                // 伤害相关列
+                // Damage-related columns
                 const damageColumns = [
-                    { column: 'totalDamage', selector: 'th[title="角色在战斗中造成的总伤害"]' },
-                    { column: 'pureCrit', selector: 'th[title="角色在战斗中造成的非幸运的暴击伤害"]' },
-                    { column: 'pureLucky', selector: 'th[title="角色在战斗中造成的非暴击的幸运伤害"]' },
-                    { column: 'critLucky', selector: 'th[title="角色在战斗中造成的暴击的幸运伤害"]' },
+                    { column: 'totalDamage', selector: 'th[title="Total Damage Dealt by Character in Combat"]' },
+                    { column: 'pureCrit', selector: 'th[title="Non-Lucky Critical Damage Dealt by Character in Combat"]' },
+                    { column: 'pureLucky', selector: 'th[title="Non-Critical Lucky Strike Damage Dealt by Character in Combat"]' },
+                    { column: 'critLucky', selector: 'th[title="Critical Lucky Strike Damage Dealt by Character in Combat"]' },
                 ];
 
                 damageColumns.forEach(({ column, selector }) => {
@@ -1282,11 +1292,15 @@
                     }
                 });
 
-                // DPS相关列
+                // DPS-related columns
                 const dpsColumns = [
-                    { column: 'realtimeDps', selector: 'th[title="角色在战斗中的最近一秒造成的伤害"]' },
-                    { column: 'realtimeDpsMax', selector: 'th[title="角色在战斗中的最大瞬时DPS"]' },
-                    { column: 'dps', selector: 'th[title="角色在战斗中的总DPS（以第一次技能与最后一次技能之间的时间作为有效战斗时间计算）"]' },
+                    { column: 'realtimeDps', selector: 'th[title="Damage Dealt by Character in the Last Second of Combat"]' },
+                    { column: 'realtimeDpsMax', selector: 'th[title="Maximum Instantaneous DPS of Character in Combat"]' },
+                    {
+                        column: 'dps',
+                        selector:
+                            'th[title="Total DPS of Character in Combat (calculated based on time between first and last skill as effective combat time)"]',
+                    },
                 ];
 
                 dpsColumns.forEach(({ column, selector }) => {
@@ -1301,12 +1315,12 @@
                     }
                 });
 
-                // 治疗相关列
+                // Healing-related columns
                 const healingColumns = [
-                    { column: 'totalHealing', selector: 'th[title="角色在战斗中造成的总治疗量"]' },
-                    { column: 'healingPureCrit', selector: 'th[title="角色在战斗中造成的非幸运的暴击治疗量"]' },
-                    { column: 'healingPureLucky', selector: 'th[title="角色在战斗中造成的非暴击的幸运治疗量"]' },
-                    { column: 'healingCritLucky', selector: 'th[title="角色在战斗中造成的暴击的幸运治疗量"]' },
+                    { column: 'totalHealing', selector: 'th[title="Total Healing Amount Provided by Character in Combat"]' },
+                    { column: 'healingPureCrit', selector: 'th[title="Non-Lucky Critical Healing Amount Provided by Character in Combat"]' },
+                    { column: 'healingPureLucky', selector: 'th[title="Non-Critical Lucky Strike Healing Amount Provided by Character in Combat"]' },
+                    { column: 'healingCritLucky', selector: 'th[title="Critical Lucky Strike Healing Amount Provided by Character in Combat"]' },
                 ];
 
                 healingColumns.forEach(({ column, selector }) => {
@@ -1321,11 +1335,15 @@
                     }
                 });
 
-                // HPS相关列
+                // HPS-related columns
                 const hpsColumns = [
-                    { column: 'realtimeHps', selector: 'th[title="角色在战斗中的最近一秒造成的伤害和治疗量"]' },
-                    { column: 'realtimeHpsMax', selector: 'th[title="角色在战斗中的最大瞬时HPS"]' },
-                    { column: 'hps', selector: 'th[title="角色在战斗中的总HPS（以第一次技能与最后一次技能之间的时间作为有效战斗时间计算）"]' },
+                    { column: 'realtimeHps', selector: 'th[title="Damage and Healing Amount Dealt by Character in the Last Second of Combat"]' },
+                    { column: 'realtimeHpsMax', selector: 'th[title="Maximum Instantaneous HPS of Character in Combat"]' },
+                    {
+                        column: 'hps',
+                        selector:
+                            'th[title="Total HPS of Character in Combat (calculated based on time between first and last skill as effective combat time)"]',
+                    },
                 ];
 
                 hpsColumns.forEach(({ column, selector }) => {
@@ -1340,9 +1358,9 @@
                     }
                 });
 
-                // 操作列
+                // Actions column
                 const actionsHeader = table.querySelector('th:last-child');
-                if (actionsHeader && actionsHeader.textContent.includes('操作')) {
+                if (actionsHeader && (actionsHeader.textContent.includes('Actions') || actionsHeader.textContent.includes('Actions'))) {
                     if (columnVisibility.actions) {
                         actionsHeader.style.removeProperty('display');
                     } else {
@@ -1350,25 +1368,25 @@
                     }
                 }
 
-                // 应用表体单元格的显示/隐藏
+                // Apply table body cell show/hide
                 applyBodyColumnVisibility();
 
-                // 更新colspan
+                // Update colspan
                 updateColspan();
             }
 
-            // 应用表体单元格的显示/隐藏
+            // Apply table body cell show/hide
             function applyBodyColumnVisibility() {
                 const table = document.getElementById('damageTable');
                 if (!table) return;
 
-                // 获取所有表体行
+                // Get all table body rows
                 const rows = table.querySelectorAll('tbody tr');
 
                 rows.forEach((row) => {
                     const cells = row.querySelectorAll('td');
 
-                    // 基础信息列 (0-8)
+                    // Basic information columns (0-8)
                     const baseCols = ['uid', 'nickname', 'job', 'score', 'hp', 'takenDamage', 'deadCount', 'critRate', 'luckyRate'];
                     baseCols.forEach((col, index) => {
                         if (cells[index]) {
@@ -1380,12 +1398,12 @@
                         }
                     });
 
-                    // 动态列需要根据当前数据组和简洁模式来确定位置
-                    let cellIndex = 9; // 从第10列开始
+                    // Dynamic columns need to determine position based on current data group and concise mode
+                    let cellIndex = 9; // Starting from the 10th column
 
-                    // 处理伤害相关列
+                    // Handle damage-related columns
                     if (currentDataGroup === 'damage' || currentDataGroup === 'all') {
-                        // 总伤害列
+                        // Total damage column
                         if (cells[cellIndex]) {
                             if (columnVisibility.totalDamage) {
                                 cells[cellIndex].style.removeProperty('display');
@@ -1395,7 +1413,7 @@
                         }
                         cellIndex++;
 
-                        // 详细伤害列（非简洁模式）
+                        // Detailed damage columns (non-concise mode)
                         if (!document.body.classList.contains('simple-mode')) {
                             const detailCols = ['pureCrit', 'pureLucky', 'critLucky'];
                             detailCols.forEach((col) => {
@@ -1410,7 +1428,7 @@
                             });
                         }
 
-                        // DPS列
+                        // DPS columns
                         const dpsCols = ['realtimeDps', 'realtimeDpsMax', 'dps'];
                         dpsCols.forEach((col) => {
                             if (cells[cellIndex]) {
@@ -1424,9 +1442,9 @@
                         });
                     }
 
-                    // 处理治疗相关列
+                    // Handle healing-related columns
                     if (currentDataGroup === 'healing' || currentDataGroup === 'all') {
-                        // 总治疗列
+                        // Total healing column
                         if (cells[cellIndex]) {
                             if (columnVisibility.totalHealing) {
                                 cells[cellIndex].style.removeProperty('display');
@@ -1436,7 +1454,7 @@
                         }
                         cellIndex++;
 
-                        // 详细治疗列（非简洁模式）
+                        // Detailed healing columns (non-concise mode)
                         if (!document.body.classList.contains('simple-mode')) {
                             const healingDetailCols = ['healingPureCrit', 'healingPureLucky', 'healingCritLucky'];
                             healingDetailCols.forEach((col) => {
@@ -1451,7 +1469,7 @@
                             });
                         }
 
-                        // HPS列
+                        // HPS columns
                         const hpsCols = ['realtimeHps', 'realtimeHpsMax', 'hps'];
                         hpsCols.forEach((col) => {
                             if (cells[cellIndex]) {
@@ -1465,7 +1483,7 @@
                         });
                     }
 
-                    // 操作列（最后一列）
+                    // Actions column (last column)
                     const lastCell = cells[cells.length - 1];
                     if (lastCell) {
                         if (columnVisibility.actions) {
@@ -1477,12 +1495,12 @@
                 });
             }
 
-            // 更新表头的colspan
+            // Update table header colspan
             function updateColspan() {
                 const table = document.getElementById('damageTable');
                 if (!table) return;
 
-                // 计算各组可见列数
+                // Calculate visible column count for each group
                 const damageMainVisible = ['totalDamage', 'pureCrit', 'pureLucky', 'critLucky'].filter((col) => columnVisibility[col]).length;
                 const dpsVisible = ['realtimeDps', 'realtimeDpsMax', 'dps'].filter((col) => columnVisibility[col]).length;
                 const healingMainVisible = ['totalHealing', 'healingPureCrit', 'healingPureLucky', 'healingCritLucky'].filter(
@@ -1490,7 +1508,7 @@
                 ).length;
                 const hpsVisible = ['realtimeHps', 'realtimeHpsMax', 'hps'].filter((col) => columnVisibility[col]).length;
 
-                // 更新colspan
+                // Update colspan
                 const damageMainHeader = table.querySelector('.damage-main-col');
                 const dpsHeader = table.querySelector('.dps-col');
                 const healingMainHeader = table.querySelector('.healing-main-col');
@@ -1533,7 +1551,7 @@
                 }
             }
 
-            // 列设置复选框变化事件
+            // Column settings checkbox change event
             function initColumnSettings() {
                 document.querySelectorAll('#columnSettingsModal input[type="checkbox"]').forEach((checkbox) => {
                     checkbox.addEventListener('change', function () {
@@ -1544,12 +1562,12 @@
                 });
             }
 
-            // 初始化列设置
+            // Initialize column settings
             document.addEventListener('DOMContentLoaded', function () {
                 initColumnSettings();
             });
 
-            // 键盘ESC键关闭弹窗
+            // Keyboard ESC key to close popup
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape') {
                     const skillModal = document.getElementById('skillModal');
@@ -1560,7 +1578,7 @@
                 }
             });
 
-            // 初始化
+            // Initialize
             function initialize() {
                 initTheme();
                 initSortMode();
@@ -1569,11 +1587,11 @@
                 fetchHistoryList();
                 fetchData();
 
-                // 添加事件委托处理技能按钮点击
+                // Add event delegation to handle skill button clicks
                 const damageTable = document.getElementById('damageTable');
                 if (damageTable) {
                     damageTable.addEventListener('click', function (event) {
-                        // 处理技能按钮点击
+                        // Handle skill button clicks
                         if (event.target.classList.contains('skill-btn') || event.target.closest('.skill-btn')) {
                             const button = event.target.classList.contains('skill-btn') ? event.target : event.target.closest('.skill-btn');
                             const userId = button.getAttribute('data-user-id');
@@ -1617,7 +1635,7 @@
         <div id="columnSettingsModal" class="column-settings-modal">
             <div class="column-settings-content">
                 <div class="column-settings-header">
-                    <div class="column-settings-title">⚙️ 表格设置</div>
+                    <div class="column-settings-title">⚙️ Table Settings</div>
                     <button class="close-btn" onclick="closeColumnSettings()">&times;</button>
                 </div>
 

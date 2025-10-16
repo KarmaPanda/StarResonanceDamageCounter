@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>血条监控 - 星痕共鸣</title>
+        <title>Health Bar Monitor</title>
         <script src="./socket.io.min.js"></script>
         <style>
             * {
@@ -104,7 +104,7 @@
                 align-content: start;
             }
 
-            /* 自定义滚动条 */
+            /* Custom scrollbar */
             .hp-grid::-webkit-scrollbar {
                 width: 6px;
             }
@@ -296,7 +296,7 @@
                 font-weight: 600;
             }
 
-            /* 血量状态颜色 */
+            /* Health status colors */
             .hp-critical {
                 --hp-color: #f44336;
                 --hp-color-light: #ef5350;
@@ -317,7 +317,7 @@
                 --hp-color-light: #42a5f5;
             }
 
-            /* 职业颜色 */
+            /* Class colors */
             .profession-damage {
                 --profession-color: #f44336;
             }
@@ -367,7 +367,7 @@
                 color: white;
             }
 
-            /* 响应式布局 - 小屏幕优化 */
+            /* Responsive layout - small screen optimization */
             @media (max-width: 600px) {
                 .header {
                     flex-direction: column;
@@ -399,7 +399,7 @@
                 }
             }
 
-            /* 窄屏模式：只显示控制按钮 */
+            /* Narrow screen mode: only show control buttons */
             @media (max-width: 700px) {
                 .header {
                     flex-direction: row;
@@ -428,22 +428,22 @@
                 }
             }
 
-            /* 极窄屏模式：隐藏DPS等数据 */
+            /* Extra narrow screen mode: hide DPS and other data */
             @media (max-width: 400px) {
-                /* 隐藏玩家统计数据 */
+                /* Hide player statistics */
                 .player-stats {
                     display: none;
                 }
             }
 
-            /* 极窄屏模式：隐藏头部 */
+            /* Extra narrow screen mode: hide header */
             @media (max-width: 300px) {
                 .header {
                     display: none;
                 }
             }
 
-            /* 动态进入动画 */
+            /* Dynamic entry animation */
             .player-card {
                 animation: slideInUp 0.6s ease-out;
                 transition:
@@ -455,7 +455,7 @@
                 animation-delay: 0.1s;
             }
 
-            /* 隐藏状态的平滑过渡 */
+            /* Smooth transition for hidden state */
             .player-card[style*='display: none'] {
                 opacity: 0;
                 transform: translateY(-10px);
@@ -472,7 +472,7 @@
                 }
             }
 
-            /* 低血量闪烁效果 */
+            /* Low health blinking effect */
             .hp-critical .player-card {
                 animation: pulse 2s infinite;
             }
@@ -492,70 +492,70 @@
         <div class="container">
             <div class="header">
                 <div class="header-left">
-                    <div class="title">🩸 血条监控</div>
-                    <div class="subtitle" id="playerCount">等待数据连接...</div>
+                    <div class="title">🩸 Health Bar Monitor</div>
+                    <div class="subtitle" id="playerCount">Waiting for data connection...</div>
                 </div>
 
                 <div class="header-center">
                     <div class="controls">
-                        <button class="btn active" id="sortHpBtn" onclick="setSortMode('hp')">💚 按血量</button>
-                        <button class="btn" id="sortNameBtn" onclick="setSortMode('name')">🏷️ 按姓名</button>
-                        <button class="btn" id="sortDpsBtn" onclick="setSortMode('dps')">⚔️ 按DPS</button>
-                        <button class="btn" id="sortHpsBtn" onclick="setSortMode('hps')">🩹 按HPS</button>
+                        <button class="btn active" id="sortHpBtn" onclick="setSortMode('hp')">💚 By Health</button>
+                        <button class="btn" id="sortNameBtn" onclick="setSortMode('name')">🏷️ By Name</button>
+                        <button class="btn" id="sortDpsBtn" onclick="setSortMode('dps')">⚔️ By DPS</button>
+                        <button class="btn" id="sortHpsBtn" onclick="setSortMode('hps')">🩹 By HPS</button>
                     </div>
                 </div>
 
                 <div class="header-right">
-                    <div class="connection-status status-connecting" id="connectionStatus">🔄 连接中</div>
+                    <div class="connection-status status-connecting" id="connectionStatus">🔄 Connecting</div>
                 </div>
             </div>
 
             <div class="hp-grid" id="playerGrid">
                 <div class="no-data">
-                    <div>🔄 正在连接服务器...</div>
+                    <div>🔄 Connecting to server...</div>
                 </div>
             </div>
         </div>
 
         <script>
-            // 全局变量
+            // Global variables
             let socket = null;
             let isWebSocketConnected = false;
             let apiInterval = null;
             let isPaused = false;
             let currentSortMode = 'hp';
             let currentPlayers = [];
-            let playerCards = []; // 预生成的卡片数组
-            const MAX_CARDS = 20; // 最大卡片数量
+            let playerCards = []; // Pre-generated card array
+            const MAX_CARDS = 20; // Maximum number of cards
 
-            // 职业映射
+            // Class mapping
             const professionMap = {
-                雷影剑士: { type: 'damage', color: '#e74c3c', short_name: '太刀' },
-                冰魔导师: { type: 'damage', color: '#e74c3c', short_name: '冰法' },
-                青岚骑士: { type: 'damage', color: '#e74c3c', short_name: '长枪' },
-                神射手: { type: 'damage', color: '#e74c3c', short_name: '弓箭' },
-                '涤罪恶火·战斧': { type: 'damage', color: '#e74c3c', short_name: '战斧' },
-                '雷霆一闪·手炮': { type: 'damage', color: '#e74c3c', short_name: '手炮' },
-                '暗灵祈舞·仪刀/仪仗': { type: 'damage', color: '#e74c3c', short_name: '仪刀' },
-                森语者: { type: 'heal', color: '#27ae60', short_name: '森语' },
-                灵魂乐手: { type: 'heal', color: '#27ae60', short_name: '吉他' },
-                巨刃守护者: { type: 'tank', color: '#2980b9', short_name: '巨刃' },
-                神盾骑士: { type: 'tank', color: '#2980b9', short_name: '剑盾' },
+                Stormblade: { type: 'damage', color: '#e74c3c', short_name: 'Stormblade' },
+                'Frost Mage': { type: 'damage', color: '#e74c3c', short_name: 'Frost Mage' },
+                'Wind Knight': { type: 'damage', color: '#e74c3c', short_name: 'Wind Knight' },
+                Marksman: { type: 'damage', color: '#e74c3c', short_name: 'Marksman' },
+                'Cleansing Hellfire Axe': { type: 'damage', color: '#e74c3c', short_name: 'Hellfire Axe' },
+                'Thunder Flash Cannon': { type: 'damage', color: '#e74c3c', short_name: 'Thunder Cannon' },
+                'Dark Spirit Prayer Dance Ceremonial Blade': { type: 'damage', color: '#e74c3c', short_name: 'Dark Ceremonial Blade' },
+                'Verdant Oracle': { type: 'heal', color: '#27ae60', short_name: 'Verdant Oracle' },
+                'Beat Performer': { type: 'heal', color: '#27ae60', short_name: 'Beat Performer' },
+                'Heavy Guardian': { type: 'tank', color: '#2980b9', short_name: 'Heavy Guardian' },
+                'Shield Knight': { type: 'tank', color: '#2980b9', short_name: 'Shield Knight' },
             };
 
-            // 初始化连接
+            // Initialize connection
             function initConnection() {
                 initWebSocket();
                 monitorConnection();
             }
 
-            // WebSocket连接
+            // WebSocket connection
             function initWebSocket() {
                 try {
                     socket = io();
 
                     socket.on('connect', () => {
-                        console.log('WebSocket 连接成功');
+                        console.log('WebSocket connection successful');
                         isWebSocketConnected = true;
                         stopAPIFallback();
                         updateConnectionStatus('connected');
@@ -568,51 +568,51 @@
                     });
 
                     socket.on('disconnect', () => {
-                        console.log('WebSocket 连接断开');
+                        console.log('WebSocket connection closed');
                         isWebSocketConnected = false;
                         updateConnectionStatus('disconnected');
                     });
 
                     socket.on('connect_error', (error) => {
-                        console.error('WebSocket 连接错误:', error);
+                        console.error('WebSocket connection error:', error);
                         isWebSocketConnected = false;
                         updateConnectionStatus('disconnected');
                     });
                 } catch (error) {
-                    console.error('WebSocket 初始化失败:', error);
+                    console.error('WebSocket initialization failed:', error);
                     startAPIFallback();
                 }
             }
 
-            // 监控连接状态
+            // Monitor connection status
             function monitorConnection() {
                 setInterval(() => {
                     if (!isWebSocketConnected && !apiInterval) {
-                        console.log('WebSocket 断开，切换到 API 轮询');
+                        console.log('WebSocket disconnected, switching to API polling');
                         startAPIFallback();
                     }
                 }, 3000);
             }
 
-            // 启动API备用模式
+            // Start API backup mode
             function startAPIFallback() {
                 if (apiInterval) return;
 
-                console.log('启动API轮询模式');
+                console.log('Starting API polling mode');
                 updateConnectionStatus('api');
                 apiInterval = setInterval(fetchDataFromAPI, 100);
             }
 
-            // 停止API备用模式
+            // Stop API backup mode
             function stopAPIFallback() {
                 if (apiInterval) {
                     clearInterval(apiInterval);
                     apiInterval = null;
-                    console.log('停止API轮询模式');
+                    console.log('Stopping API polling mode');
                 }
             }
 
-            // 从API获取数据
+            // Get data from API
             async function fetchDataFromAPI() {
                 if (isPaused) return;
 
@@ -623,12 +623,12 @@
                         processData(data.user);
                     }
                 } catch (error) {
-                    console.error('API请求失败:', error);
+                    console.error('API request failed:', error);
                     updateConnectionStatus('disconnected');
                 }
             }
 
-            // 更新连接状态显示
+            // Update connection status display
             function updateConnectionStatus(status) {
                 const statusElement = document.getElementById('connectionStatus');
                 statusElement.className = `connection-status status-${status}`;
@@ -638,55 +638,55 @@
                         statusElement.textContent = '🟢 WebSocket';
                         break;
                     case 'api':
-                        statusElement.textContent = '🟡 轮询模式';
+                        statusElement.textContent = '🟡 Polling Mode';
                         break;
                     case 'disconnected':
-                        statusElement.textContent = '🔴 连接断开';
+                        statusElement.textContent = '🔴 Disconnected';
                         break;
                     default:
-                        statusElement.textContent = '🔄 连接中';
+                        statusElement.textContent = '🔄 Connecting';
                 }
             }
 
-            // 判断角色是否未参与战斗
+            // Check if character did not participate in combat
             function isUserInactive(user) {
-                // 检查总伤害、总DPS、总HPS是否都为0
+                // Check if total damage, total DPS, total HPS are all 0
                 const totalDamage = user.total_damage?.total || 0;
                 const totalDps = user.total_dps || 0;
                 const totalHps = user.total_hps || 0;
 
-                // 检查暴击率和幸运率是否为NaN
+                // Check if critical rate and lucky rate are NaN
                 const critRate = user.total_count?.critical / user.total_count?.total;
                 const luckyRate = user.total_count?.lucky / user.total_count?.total;
 
                 return (totalDamage === 0 && totalDps === 0 && totalHps === 0) || (isNaN(critRate) && isNaN(luckyRate));
             }
 
-            // 处理数据
+            // Process data
             function processData(users) {
                 users = Object.entries(users)
                     .map(([id, user]) => ({ ...user, id }))
                     .filter((user) => !isUserInactive(user));
                 if (!Array.isArray(users)) return;
 
-                // 过滤出有血量数据的用户，最多20个
+                // Filter users with health data, max 20
                 let validUsers = users.filter((user) => user.hp !== undefined && user.max_hp !== undefined && user.max_hp > 0).slice(0, 20);
 
-                // 排序
+                // Sort
                 validUsers = sortPlayers(validUsers);
 
                 currentPlayers = validUsers;
                 updateUI();
             }
 
-            // 排序玩家
+            // Sort players
             function sortPlayers(players) {
                 switch (currentSortMode) {
                     case 'hp':
                         return players.sort((a, b) => {
                             const hpPercentA = (a.hp / a.max_hp) * 100;
                             const hpPercentB = (b.hp / b.max_hp) * 100;
-                            return hpPercentA - hpPercentB; // 血量低的在前
+                            return hpPercentA - hpPercentB; // Low health first
                         });
                     case 'name':
                         return players.sort((a, b) => {
@@ -703,33 +703,33 @@
                 }
             }
 
-            // 更新UI
+            // Update UI
             function updateUI() {
                 updatePlayerCount();
                 renderPlayerCards();
             }
 
-            // 更新玩家数量显示
+            // Update player count display
             function updatePlayerCount() {
                 const playerCountElement = document.getElementById('playerCount');
                 const count = currentPlayers.length;
-                playerCountElement.textContent = `监控中: ${count}/20 名玩家`;
+                playerCountElement.textContent = `Monitoring: ${count}/20 players`;
             }
 
-            // 渲染玩家卡片
+            // Render player cards
             function renderPlayerCards() {
                 const grid = document.getElementById('playerGrid');
                 const noDataElement = grid.querySelector('.no-data');
 
                 if (currentPlayers.length === 0) {
-                    // 隐藏所有卡片
+                    // Hide all cards
                     playerCards.forEach((card, index) => {
                         setTimeout(() => {
                             card.style.display = 'none';
                         }, index * 20);
                     });
 
-                    // 显示无数据提示
+                    // Show no data message
                     if (noDataElement) {
                         setTimeout(
                             () => {
@@ -741,23 +741,23 @@
                     return;
                 }
 
-                // 隐藏无数据提示
+                // Hide no data message
                 if (noDataElement) {
                     noDataElement.style.display = 'none';
                 }
 
-                // 更新现有卡片内容并显示
+                // Update existing card content and show
                 currentPlayers.forEach((player, index) => {
                     if (index < playerCards.length) {
                         const card = playerCards[index];
 
-                        // 如果卡片当前隐藏，先显示再更新内容
+                        // If card is currently hidden, show it first then update content
                         if (card.style.display === 'none') {
                             card.style.display = 'flex';
                             card.style.opacity = '0';
                             card.style.transform = 'translateY(20px)';
 
-                            // 延迟显示动画
+                            // Delay show animation
                             setTimeout(() => {
                                 card.style.opacity = '1';
                                 card.style.transform = 'translateY(0)';
@@ -768,7 +768,7 @@
                     }
                 });
 
-                // 隐藏多余的卡片
+                // Hide excess cards
                 for (let i = currentPlayers.length; i < playerCards.length; i++) {
                     const card = playerCards[i];
                     if (card.style.display !== 'none') {
@@ -782,30 +782,30 @@
                 }
             }
 
-            // 预生成玩家卡片
+            // Pre-generate player cards
             function preGeneratePlayerCards() {
                 const grid = document.getElementById('playerGrid');
 
-                // 清空现有内容
+                // Clear existing content
                 grid.innerHTML = '';
                 playerCards = [];
 
-                // 创建最大数量的卡片
+                // Create maximum number of cards
                 for (let i = 0; i < MAX_CARDS; i++) {
                     const card = createEmptyPlayerCard(i);
                     playerCards.push(card);
                     grid.appendChild(card);
                 }
 
-                // 添加无数据提示元素
+                // Add no data message element
                 const noDataElement = document.createElement('div');
                 noDataElement.className = 'no-data';
-                noDataElement.innerHTML = '<div>📭 暂无参战玩家血条数据<br>🗺️ 切线或切图可重新获取血条数据</div>';
+                noDataElement.innerHTML = '<div>📭 No player health bar data available<br>🗺️ Switch servers or maps to refresh health bar data</div>';
                 noDataElement.style.display = 'block';
                 grid.appendChild(noDataElement);
             }
 
-            // 创建空的玩家卡片
+            // Create empty player card
             function createEmptyPlayerCard(index) {
                 const div = document.createElement('div');
                 div.className = 'player-card';
@@ -817,23 +817,23 @@
                 div.innerHTML = `
                     <div class="player-info">
                         <div class="player-basic">
-                            <div class="player-name" title="">等待数据...</div>
+                            <div class="player-name" title="">Waiting for data...</div>
                             <div class="player-profession">-</div>
                         </div>
                         <div class="player-stats">
-                            <div class="stat-item" title="总DPS">
+                            <div class="stat-item" title="Total DPS">
                                 <span class="stat-icon">⚔️</span>
                                 <span class="stat-value">0</span>
                             </div>
-                            <div class="stat-item" title="总HPS">
+                            <div class="stat-item" title="Total HPS">
                                 <span class="stat-icon">🩹</span>
                                 <span class="stat-value">0</span>
                             </div>
-                            <div class="stat-item" title="总伤害">
+                            <div class="stat-item" title="Total Damage">
                                 <span class="stat-icon">💥</span>
                                 <span class="stat-value">0</span>
                             </div>
-                            <div class="stat-item" title="总治疗">
+                            <div class="stat-item" title="Total Healing">
                                 <span class="stat-icon">❤️</span>
                                 <span class="stat-value">0</span>
                             </div>
@@ -854,19 +854,19 @@
                 return div;
             }
 
-            // 更新现有玩家卡片
+            // Update existing player card
             function updatePlayerCard(cardElement, player, index) {
                 const hp = player.hp || 0;
                 const maxHp = player.max_hp || 1;
                 const hpPercent = Math.max(0, Math.min(100, (hp / maxHp) * 100));
                 const name = player.name || `UID:${player.id}`;
-                const profession = player.profession || '未知';
+                const profession = player.profession || 'Unknown';
 
                 // 获取职业信息
                 const professionParts = profession.split('-');
                 const mainProfession = professionParts[0];
                 const subProfession = professionParts[1] || '';
-                const professionInfo = professionMap[mainProfession] || { type: '未知', color: '#9E9E9E' };
+                const professionInfo = professionMap[mainProfession] || { type: 'Unknown', color: '#9E9E9E' };
 
                 // 确定血量状态
                 let hpClass = '';
@@ -891,7 +891,7 @@
                 playerNameEl.textContent = name;
                 playerNameEl.title = name;
 
-                playerProfessionEl.textContent = subProfession || professionInfo.short_name || '未知';
+                playerProfessionEl.textContent = professionInfo.short_name || mainProfession + ' ' + subProfession || 'Unknown';
                 playerProfessionEl.style.backgroundColor = professionInfo.color;
 
                 hpCurrentEl.textContent = hp;

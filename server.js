@@ -20,7 +20,7 @@ const app = express();
 const { exec } = require('child_process');
 const findDefaultNetworkDevice = require('./algo/netInterfaceUtil');
 
-const skillConfig = require('./tables/skill_names_new.json');
+const skillConfig = require('./tables/skill_names_en.json');
 const VERSION = '3.3.1';
 const SETTINGS_PATH = path.join('./settings.json');
 let globalSettings = {
@@ -35,7 +35,7 @@ const rl = readline.createInterface({
 });
 const devices = cap.deviceList();
 
-// 暂停统计状态
+// Pause statistics status
 let isPaused = false;
 
 function warnAndExit(text) {
@@ -66,52 +66,52 @@ function ask(question) {
 function getSubProfessionBySkillId(skillId) {
     switch (skillId) {
         case 1241:
-            return '射线';
+            return 'Frostbeam';
         case 2307:
         case 2361:
         case 55302:
-            return '协奏';
+            return 'Concerto';
         case 20301:
-            return '愈合';
+            return 'Lifebind';
         case 1518:
         case 1541:
         case 21402:
-            return '惩戒';
+            return 'Smite';
         case 2306:
-            return '狂音';
+            return 'Resonance';
         case 120901:
         case 120902:
-            return '冰矛';
+            return 'Icicle';
         case 1714:
         case 1734:
-            return '居合';
+            return 'Iaido Slash';
         case 44701:
         case 179906:
-            return '月刃';
+            return 'Moonstrike';
         case 220112:
         case 2203622:
-            return '鹰弓';
+            return 'Falconry';
         case 2292:
         case 1700820:
         case 1700825:
         case 1700827:
-            return '狼弓';
+            return 'Wildpack';
         case 1419:
-            return '空枪';
+            return 'Skyward';
         case 1405:
         case 1418:
-            return '重装';
+            return 'Vanguard';
         case 2405:
-            return '防盾';
+            return 'Recovery';
         case 2406:
-            return '光盾';
+            return 'Shield';
         case 199902:
-            return '岩盾';
+            return 'Earthfort';
         case 1930:
         case 1931:
         case 1934:
         case 1935:
-            return '格挡';
+            return 'Block';
         default:
             return '';
     }
@@ -140,7 +140,7 @@ class Lock {
     }
 }
 
-// 通用统计类，用于处理伤害或治疗数据
+// General statistics class for handling damage or healing data
 class StatisticData {
     constructor(user, type, element, name) {
         this.user = user;
@@ -152,7 +152,7 @@ class StatisticData {
             critical: 0,
             lucky: 0,
             crit_lucky: 0,
-            hpLessen: 0, // 仅用于伤害统计
+            hpLessen: 0, // Only used for damage statistics
             total: 0,
         };
         this.count = {
@@ -161,24 +161,24 @@ class StatisticData {
             lucky: 0,
             total: 0,
         };
-        this.realtimeWindow = []; // 实时统计窗口
-        this.timeRange = []; // 时间范围 [开始时间, 最后时间]
+        this.realtimeWindow = []; // Real-time statistics window
+        this.timeRange = []; // Time range [start time, end time]
         this.realtimeStats = {
             value: 0,
             max: 0,
         };
     }
 
-    /** 添加数据记录
-     * @param {number} value - 数值
-     * @param {boolean} isCrit - 是否为暴击
-     * @param {boolean} isLucky - 是否为幸运
-     * @param {number} hpLessenValue - 生命值减少量（仅伤害使用）
+    /** Add data record
+     * @param {number} value - Value
+     * @param {boolean} isCrit - Whether it's a critical hit
+     * @param {boolean} isLucky - Whether it's lucky
+     * @param {number} hpLessenValue - HP decrease amount (only used for damage)
      */
     addRecord(value, isCrit, isLucky, hpLessenValue = 0) {
         const now = Date.now();
 
-        // 更新数值统计
+        // Update numerical statistics
         if (isCrit) {
             if (isLucky) {
                 this.stats.crit_lucky += value;
@@ -193,7 +193,7 @@ class StatisticData {
         this.stats.total += value;
         this.stats.hpLessen += hpLessenValue;
 
-        // 更新次数统计
+        // Update count statistics
         if (isCrit) {
             this.count.critical++;
         }
@@ -217,28 +217,28 @@ class StatisticData {
         }
     }
 
-    /** 更新实时统计 */
+    /** Update real-time statistics */
     updateRealtimeStats() {
         const now = Date.now();
 
-        // 清除超过1秒的数据
+        // Clear data older than 1 second
         while (this.realtimeWindow.length > 0 && now - this.realtimeWindow[0].time > 1000) {
             this.realtimeWindow.shift();
         }
 
-        // 计算当前实时值
+        // Calculate current real-time value
         this.realtimeStats.value = 0;
         for (const entry of this.realtimeWindow) {
             this.realtimeStats.value += entry.value;
         }
 
-        // 更新最大值
+        // Update maximum value
         if (this.realtimeStats.value > this.realtimeStats.max) {
             this.realtimeStats.max = this.realtimeStats.value;
         }
     }
 
-    /** 计算总的每秒统计值 */
+    /** Calculate total per second statistics */
     getTotalPerSecond() {
         if (!this.timeRange[0] || !this.timeRange[1]) {
             return 0;
@@ -248,7 +248,7 @@ class StatisticData {
         return totalPerSecond;
     }
 
-    /** 重置数据 */
+    /** Reset data */
     reset() {
         this.stats = {
             normal: 0,
@@ -277,35 +277,35 @@ class UserData {
     constructor(uid) {
         this.uid = uid;
         this.name = '';
-        this.damageStats = new StatisticData(this, '伤害');
-        this.healingStats = new StatisticData(this, '治疗');
-        this.takenDamage = 0; // 承伤
-        this.deadCount = 0; // 死亡次数
-        this.profession = '未知';
-        this.skillUsage = new Map(); // 技能使用情况
-        this.fightPoint = 0; // 总评分
+        this.damageStats = new StatisticData(this, 'Damage');
+        this.healingStats = new StatisticData(this, 'Healing');
+        this.takenDamage = 0; // Damage taken
+        this.deadCount = 0; // Death count
+        this.profession = 'Unknown';
+        this.skillUsage = new Map(); // Skill usage statistics
+        this.fightPoint = 0; // Total fight point
         this.subProfession = '';
         this.attr = {};
     }
 
-    /** 添加伤害记录
-     * @param {number} skillId - 技能ID/Buff ID
-     * @param {string} element - 技能元素属性
-     * @param {number} damage - 伤害值
-     * @param {boolean} isCrit - 是否为暴击
-     * @param {boolean} [isLucky] - 是否为幸运
-     * @param {boolean} [isCauseLucky] - 是否造成幸运
-     * @param {number} hpLessenValue - 生命值减少量
+    /** Add damage record
+     * @param {number} skillId - Skill ID/Buff ID
+     * @param {string} element - Skill element attribute
+     * @param {number} damage - Damage value
+     * @param {boolean} isCrit - Whether it's a critical hit
+     * @param {boolean} [isLucky] - Whether it's lucky
+     * @param {boolean} [isCauseLucky] - Whether it causes lucky
+     * @param {number} hpLessenValue - HP decrease amount
      */
     addDamage(skillId, element, damage, isCrit, isLucky, isCauseLucky, hpLessenValue = 0) {
         this.damageStats.addRecord(damage, isCrit, isLucky, hpLessenValue);
-        // 记录技能使用情况
+        // Record skill usage
         const skillName = skillConfig[skillId] ?? skillId;
-        if (!this.skillUsage.has('伤害-' + skillName)) {
-            this.skillUsage.set('伤害-' + skillName, new StatisticData(this, '伤害', element, skillName));
+        if (!this.skillUsage.has('Damage-' + skillName)) {
+            this.skillUsage.set('Damage-' + skillName, new StatisticData(this, 'Damage', element, skillName));
         }
-        this.skillUsage.get('伤害-' + skillName).addRecord(damage, isCrit, isCauseLucky, hpLessenValue);
-        this.skillUsage.get('伤害-' + skillName).realtimeWindow.length = 0;
+        this.skillUsage.get('Damage-' + skillName).addRecord(damage, isCrit, isCauseLucky, hpLessenValue);
+        this.skillUsage.get('Damage-' + skillName).realtimeWindow.length = 0;
 
         const subProfession = getSubProfessionBySkillId(skillId);
         if (subProfession) {
@@ -313,23 +313,23 @@ class UserData {
         }
     }
 
-    /** 添加治疗记录
-     * @param {number} skillId - 技能ID/Buff ID
-     * @param {string} element - 技能元素属性
-     * @param {number} healing - 治疗值
-     * @param {boolean} isCrit - 是否为暴击
-     * @param {boolean} [isLucky] - 是否为幸运
-     * @param {boolean} [isCauseLucky] - 是否造成幸运
+    /** Add healing record
+     * @param {number} skillId - Skill ID/Buff ID
+     * @param {string} element - Skill element attribute
+     * @param {number} healing - Healing value
+     * @param {boolean} isCrit - Whether it's a critical hit
+     * @param {boolean} [isLucky] - Whether it's lucky
+     * @param {boolean} [isCauseLucky] - Whether it causes lucky
      */
     addHealing(skillId, element, healing, isCrit, isLucky, isCauseLucky) {
         this.healingStats.addRecord(healing, isCrit, isLucky);
-        // 记录技能使用情况
+        // Record skill usage
         const skillName = skillConfig[skillId] ?? skillId;
-        if (!this.skillUsage.has('治疗-' + skillName)) {
-            this.skillUsage.set('治疗-' + skillName, new StatisticData(this, '治疗', element, skillName));
+        if (!this.skillUsage.has('Healing-' + skillName)) {
+            this.skillUsage.set('Healing-' + skillName, new StatisticData(this, 'Healing', element, skillName));
         }
-        this.skillUsage.get('治疗-' + skillName).addRecord(healing, isCrit, isCauseLucky);
-        this.skillUsage.get('治疗-' + skillName).realtimeWindow.length = 0;
+        this.skillUsage.get('Healing-' + skillName).addRecord(healing, isCrit, isCauseLucky);
+        this.skillUsage.get('Healing-' + skillName).realtimeWindow.length = 0;
 
         const subProfession = getSubProfessionBySkillId(skillId);
         if (subProfession) {
@@ -337,32 +337,32 @@ class UserData {
         }
     }
 
-    /** 添加承伤记录
-     * @param {number} damage - 承受的伤害值
-     * @param {boolean} isDead - 是否致死伤害
+    /** Add taken damage record
+     * @param {number} damage - Damage taken
+     * @param {boolean} isDead - Whether it's fatal damage
      * */
     addTakenDamage(damage, isDead) {
         this.takenDamage += damage;
         if (isDead) this.deadCount++;
     }
 
-    /** 更新实时DPS和HPS 计算过去1秒内的总伤害和治疗 */
+    /** Update real-time DPS and HPS - Calculate total damage and healing in the past 1 second */
     updateRealtimeDps() {
         this.damageStats.updateRealtimeStats();
         this.healingStats.updateRealtimeStats();
     }
 
-    /** 计算总DPS */
+    /** Calculate total DPS */
     getTotalDps() {
         return this.damageStats.getTotalPerSecond();
     }
 
-    /** 计算总HPS */
+    /** Calculate total HPS */
     getTotalHps() {
         return this.healingStats.getTotalPerSecond();
     }
 
-    /** 获取合并的次数统计 */
+    /** Get combined count statistics */
     getTotalCount() {
         return {
             normal: this.damageStats.count.normal + this.healingStats.count.normal,
@@ -372,7 +372,7 @@ class UserData {
         };
     }
 
-    /** 获取用户数据摘要 */
+    /** Get user data summary */
     getSummary() {
         return {
             realtime_dps: this.damageStats.realtimeStats.value,
@@ -394,7 +394,7 @@ class UserData {
         };
     }
 
-    /** 获取技能统计数据 */
+    /** Get skill statistics data */
     getSkillSummary() {
         const skills = {};
         for (const [skillKey, stat] of this.skillUsage) {
@@ -423,36 +423,36 @@ class UserData {
         return skills;
     }
 
-    /** 设置职业
-     * @param {string} profession - 职业名称
+    /** Set profession
+     * @param {string} profession - Profession name
      * */
     setProfession(profession) {
         if (profession !== this.profession) this.setSubProfession('');
         this.profession = profession;
     }
 
-    /** 设置子职业
-     * @param {string} subProfession - 子职业名称
+    /** Set sub-profession
+     * @param {string} subProfession - Sub-profession name
      * */
     setSubProfession(subProfession) {
         this.subProfession = subProfession;
     }
 
-    /** 设置姓名
-     * @param {string} name - 姓名
+    /** Set name
+     * @param {string} name - Name
      * */
     setName(name) {
         this.name = name;
     }
 
-    /** 设置用户总评分
-     * @param {number} fightPoint - 总评分
+    /** Set user total fight point
+     * @param {number} fightPoint - Total fight point
      */
     setFightPoint(fightPoint) {
         this.fightPoint = fightPoint;
     }
 
-    /** 设置额外数据
+    /** Set additional data
      * @param {string} key
      * @param {any} value
      */
@@ -460,7 +460,7 @@ class UserData {
         this.attr[key] = value;
     }
 
-    /** 重置数据 预留 */
+    /** Reset data - Reserved */
     reset() {
         this.damageStats.reset();
         this.healingStats.reset();
@@ -470,20 +470,20 @@ class UserData {
     }
 }
 
-// 用户数据管理器
+// User data manager
 class UserDataManager {
     constructor(logger) {
         this.logger = logger;
         this.users = new Map();
-        this.userCache = new Map(); // 用户名字和职业缓存
+        this.userCache = new Map(); // User name and profession cache
         this.cacheFilePath = './users.json';
 
-        // 节流相关配置
-        this.saveThrottleDelay = 2000; // 2秒节流延迟，避免频繁磁盘写入
+        // Throttling related configuration
+        this.saveThrottleDelay = 2000; // 2-second throttle delay to avoid frequent disk writes
         this.saveThrottleTimer = null;
         this.pendingSave = false;
 
-        this.hpCache = new Map(); // 这个经常变化的就不存盘了
+        this.hpCache = new Map(); // This frequently changing data won't be saved to disk
         this.startTime = Date.now();
 
         this.logLock = new Lock();
@@ -495,7 +495,7 @@ class UserDataManager {
             maxHp: new Map(),
         };
 
-        // 自动保存
+        // Auto-save
         this.lastAutoSaveTime = 0;
         this.lastLogTime = 0;
         setInterval(() => {
@@ -505,12 +505,12 @@ class UserDataManager {
         }, 10 * 1000);
     }
 
-    /** 初始化方法 - 异步加载用户缓存 */
+    /** Initialization method - Asynchronously load user cache */
     async initialize() {
         await this.loadUserCache();
     }
 
-    /** 加载用户缓存 */
+    /** Load user cache */
     async loadUserCache() {
         try {
             await fsPromises.access(this.cacheFilePath);
@@ -525,7 +525,7 @@ class UserDataManager {
         }
     }
 
-    /** 保存用户缓存 */
+    /** Save user cache */
     async saveUserCache() {
         try {
             const cacheData = Object.fromEntries(this.userCache);
@@ -535,7 +535,7 @@ class UserDataManager {
         }
     }
 
-    /** 节流保存用户缓存 - 减少频繁的磁盘写入 */
+    /** Throttled save user cache - Reduce frequent disk writes */
     saveUserCacheThrottled() {
         this.pendingSave = true;
 
@@ -552,7 +552,7 @@ class UserDataManager {
         }, this.saveThrottleDelay);
     }
 
-    /** 强制立即保存用户缓存 - 用于程序退出等场景 */
+    /** Force immediate save of user cache - Used for program exit scenarios */
     async forceUserCacheSave() {
         await this.saveAllUserData(this.users, this.startTime);
         if (this.saveThrottleTimer) {
@@ -565,15 +565,15 @@ class UserDataManager {
         }
     }
 
-    /** 获取或创建用户记录
-     * @param {number} uid - 用户ID
-     * @returns {UserData} - 用户数据实例
+    /** Get or create user record
+     * @param {number} uid - User ID
+     * @returns {UserData} - User data instance
      */
     getUser(uid) {
         if (!this.users.has(uid)) {
             const user = new UserData(uid);
 
-            // 从缓存中设置名字和职业
+            // Set name and profession from cache
             const cachedData = this.userCache.get(String(uid));
             if (cachedData) {
                 if (cachedData.name) {
@@ -598,16 +598,16 @@ class UserDataManager {
         return this.users.get(uid);
     }
 
-    /** 添加伤害记录
-     * @param {number} uid - 造成伤害的用户ID
-     * @param {number} skillId - 技能ID/Buff ID
-     * @param {string} element - 技能元素属性
-     * @param {number} damage - 伤害值
-     * @param {boolean} isCrit - 是否为暴击
-     * @param {boolean} [isLucky] - 是否为幸运
-     * @param {boolean} [isCauseLucky] - 是否造成幸运
-     * @param {number} hpLessenValue - 生命值减少量
-     * @param {number} targetUid - 伤害目标ID
+    /** Add damage record
+     * @param {number} uid - User ID who dealt damage
+     * @param {number} skillId - Skill ID/Buff ID
+     * @param {string} element - Skill element attribute
+     * @param {number} damage - Damage value
+     * @param {boolean} isCrit - Whether it's a critical hit
+     * @param {boolean} [isLucky] - Whether it's lucky
+     * @param {boolean} [isCauseLucky] - Whether it causes lucky
+     * @param {number} hpLessenValue - HP decrease amount
+     * @param {number} targetUid - Damage target ID
      */
     addDamage(uid, skillId, element, damage, isCrit, isLucky, isCauseLucky, hpLessenValue = 0, targetUid) {
         if (isPaused) return;
@@ -617,15 +617,15 @@ class UserDataManager {
         user.addDamage(skillId, element, damage, isCrit, isLucky, isCauseLucky, hpLessenValue);
     }
 
-    /** 添加治疗记录
-     * @param {number} uid - 进行治疗的用户ID
-     * @param {number} skillId - 技能ID/Buff ID
-     * @param {string} element - 技能元素属性
-     * @param {number} healing - 治疗值
-     * @param {boolean} isCrit - 是否为暴击
-     * @param {boolean} [isLucky] - 是否为幸运
-     * @param {boolean} [isCauseLucky] - 是否造成幸运
-     * @param {number} targetUid - 被治疗的用户ID
+    /** Add healing record
+     * @param {number} uid - User ID who performed healing
+     * @param {number} skillId - Skill ID/Buff ID
+     * @param {string} element - Skill element attribute
+     * @param {number} healing - Healing value
+     * @param {boolean} isCrit - Whether it's a critical hit
+     * @param {boolean} [isLucky] - Whether it's lucky
+     * @param {boolean} [isCauseLucky] - Whether it causes lucky
+     * @param {number} targetUid - User ID being healed
      */
     addHealing(uid, skillId, element, healing, isCrit, isLucky, isCauseLucky, targetUid) {
         if (isPaused) return;
@@ -636,10 +636,10 @@ class UserDataManager {
         }
     }
 
-    /** 添加承伤记录
-     * @param {number} uid - 承受伤害的用户ID
-     * @param {number} damage - 承受的伤害值
-     * @param {boolean} isDead - 是否致死伤害
+    /** Add taken damage record
+     * @param {number} uid - User ID who took damage
+     * @param {number} damage - Damage taken
+     * @param {boolean} isDead - Whether it's fatal damage
      * */
     addTakenDamage(uid, damage, isDead) {
         if (isPaused) return;
@@ -648,8 +648,8 @@ class UserDataManager {
         user.addTakenDamage(damage, isDead);
     }
 
-    /** 添加日志记录
-     * @param {string} log - 日志内容
+    /** Add log record
+     * @param {string} log - Log content
      * */
     async addLog(log) {
         if (isPaused) return;
@@ -678,9 +678,9 @@ class UserDataManager {
         this.logLock.release();
     }
 
-    /** 设置用户职业
-     * @param {number} uid - 用户ID
-     * @param {string} profession - 职业名称
+    /** Set user profession
+     * @param {number} uid - User ID
+     * @param {string} profession - Profession name
      * */
     setProfession(uid, profession) {
         const user = this.getUser(uid);
@@ -688,7 +688,7 @@ class UserDataManager {
             user.setProfession(profession);
             this.logger.info(`Found profession ${profession} for uid ${uid}`);
 
-            // 更新缓存
+            // Update cache
             const uidStr = String(uid);
             if (!this.userCache.has(uidStr)) {
                 this.userCache.set(uidStr, {});
@@ -698,9 +698,9 @@ class UserDataManager {
         }
     }
 
-    /** 设置用户姓名
-     * @param {number} uid - 用户ID
-     * @param {string} name - 姓名
+    /** Set user name
+     * @param {number} uid - User ID
+     * @param {string} name - Name
      * */
     setName(uid, name) {
         const user = this.getUser(uid);
@@ -708,7 +708,7 @@ class UserDataManager {
             user.setName(name);
             this.logger.info(`Found player name ${name} for uid ${uid}`);
 
-            // 更新缓存
+            // Update cache
             const uidStr = String(uid);
             if (!this.userCache.has(uidStr)) {
                 this.userCache.set(uidStr, {});
@@ -718,9 +718,9 @@ class UserDataManager {
         }
     }
 
-    /** 设置用户总评分
-     * @param {number} uid - 用户ID
-     * @param {number} fightPoint - 总评分
+    /** Set user total fight point
+     * @param {number} uid - User ID
+     * @param {number} fightPoint - Total fight point
      */
     setFightPoint(uid, fightPoint) {
         const user = this.getUser(uid);
@@ -728,7 +728,7 @@ class UserDataManager {
             user.setFightPoint(fightPoint);
             this.logger.info(`Found fight point ${fightPoint} for uid ${uid}`);
 
-            // 更新缓存
+            // Update cache
             const uidStr = String(uid);
             if (!this.userCache.has(uidStr)) {
                 this.userCache.set(uidStr, {});
@@ -738,8 +738,8 @@ class UserDataManager {
         }
     }
 
-    /** 设置额外数据
-     * @param {number} uid - 用户ID
+    /** Set additional data
+     * @param {number} uid - User ID
      * @param {string} key
      * @param {any} value
      */
@@ -748,7 +748,7 @@ class UserDataManager {
         user.attr[key] = value;
 
         if (key === 'max_hp') {
-            // 更新缓存
+            // Update cache
             const uidStr = String(uid);
             if (!this.userCache.has(uidStr)) {
                 this.userCache.set(uidStr, {});
@@ -761,14 +761,14 @@ class UserDataManager {
         }
     }
 
-    /** 更新所有用户的实时DPS和HPS */
+    /** Update real-time DPS and HPS for all users */
     updateAllRealtimeDps() {
         for (const user of this.users.values()) {
             user.updateRealtimeDps();
         }
     }
 
-    /** 获取用户的技能数据 */
+    /** Get user skill data */
     getUserSkillData(uid) {
         const user = this.users.get(uid);
         if (!user) return null;
@@ -782,7 +782,7 @@ class UserDataManager {
         };
     }
 
-    /** 获取所有用户数据 */
+    /** Get all user data */
     getAllUsersData() {
         const result = {};
         for (const [uid, user] of this.users.entries()) {
@@ -791,7 +791,7 @@ class UserDataManager {
         return result;
     }
 
-    /** 获取所有敌方缓存数据 */
+    /** Get all enemy cache data */
     getAllEnemiesData() {
         const result = {};
         const enemyIds = new Set([...this.enemyCache.name.keys(), ...this.enemyCache.hp.keys(), ...this.enemyCache.maxHp.keys()]);
@@ -805,21 +805,21 @@ class UserDataManager {
         return result;
     }
 
-    /** 移除敌方缓存数据 */
+    /** Remove enemy cache data */
     deleteEnemyData(id) {
         this.enemyCache.name.delete(id);
         this.enemyCache.hp.delete(id);
         this.enemyCache.maxHp.delete(id);
     }
 
-    /** 清空敌方缓存 */
+    /** Clear enemy cache */
     refreshEnemyCache() {
         this.enemyCache.name.clear();
         this.enemyCache.hp.clear();
         this.enemyCache.maxHp.clear();
     }
 
-    /** 清除所有用户数据 */
+    /** Clear all user data */
     clearAll() {
         const usersToSave = this.users;
         const saveStartTime = this.startTime;
@@ -830,14 +830,14 @@ class UserDataManager {
         this.saveAllUserData(usersToSave, saveStartTime);
     }
 
-    /** 获取用户列表 */
+    /** Get user list */
     getUserIds() {
         return Array.from(this.users.keys());
     }
 
-    /** 保存所有用户数据到历史记录
-     * @param {Map} usersToSave - 要保存的用户数据Map
-     * @param {number} startTime - 数据开始时间
+    /** Save all user data to history
+     * @param {Map} usersToSave - User data Map to save
+     * @param {number} startTime - Data start time
      */
     async saveAllUserData(usersToSave = null, startTime = null) {
         try {
@@ -886,11 +886,11 @@ class UserDataManager {
                 await fsPromises.mkdir(usersDir, { recursive: true });
             }
 
-            // 保存所有用户数据汇总
+            // Save all user data summary
             const allUserDataPath = path.join(logDir, 'allUserData.json');
             await fsPromises.writeFile(allUserDataPath, JSON.stringify(allUsersData, null, 2), 'utf8');
 
-            // 保存每个用户的详细数据
+            // Save detailed data for each user
             for (const [uid, userData] of userDatas.entries()) {
                 const userDataPath = path.join(usersDir, `${uid}.json`);
                 await fsPromises.writeFile(userDataPath, JSON.stringify(userData, null, 2), 'utf8');
@@ -927,7 +927,7 @@ async function main() {
         print(String(i).padStart(2, ' ') + '.' + (devices[i].description || devices[i].name));
     }
 
-    // 从命令行参数获取设备号和日志级别
+    // Get device number and log level from command line arguments
     const args = process.argv.slice(2);
     let num = args[0];
     let log_level = args[1];
@@ -944,12 +944,12 @@ async function main() {
         }
     }
 
-    // 参数验证函数
+    // Parameter validation function
     function isValidLogLevel(level) {
         return ['info', 'debug'].includes(level);
     }
 
-    // 如果命令行没传或者不合法，使用交互
+    // If not passed via command line or invalid, use interactive mode
     while (num === undefined || !devices[num]) {
         num = await ask('Please enter the number of the device to capture: ');
         if (!num) {
@@ -989,10 +989,10 @@ async function main() {
 
     const userDataManager = new UserDataManager(logger);
 
-    // 异步初始化用户数据管理器
+    // Asynchronously initialize user data manager
     await userDataManager.initialize();
 
-    // 进程退出时保存用户缓存
+    // Save user cache when process exits
     process.on('SIGINT', async () => {
         console.log('\nSaving user cache...');
         await userDataManager.forceUserCacheSave();
@@ -1005,17 +1005,17 @@ async function main() {
         process.exit(0);
     });
 
-    //瞬时DPS更新
+    // Real-time DPS update
     setInterval(() => {
         if (!isPaused) {
             userDataManager.updateAllRealtimeDps();
         }
     }, 100);
 
-    //express 和 socket.io 设置
+    // Express and Socket.io setup
     app.use(cors());
-    app.use(express.json()); // 解析JSON请求体
-    app.use(express.static(path.join(__dirname, 'public'))); // 静态文件服务
+    app.use(express.json()); // Parse JSON request body
+    app.use(express.static(path.join(__dirname, 'public'))); // Static file service
     const server = http.createServer(app);
     const io = new Server(server, {
         cors: {
@@ -1053,7 +1053,7 @@ async function main() {
         });
     });
 
-    // 暂停/开始统计API
+    // Pause/Resume statistics API
     app.post('/api/pause', (req, res) => {
         const { paused } = req.body;
         isPaused = paused;
@@ -1065,7 +1065,7 @@ async function main() {
         });
     });
 
-    // 获取暂停状态API
+    // Get pause status API
     app.get('/api/pause', (req, res) => {
         res.json({
             code: 0,
@@ -1073,7 +1073,7 @@ async function main() {
         });
     });
 
-    // 获取技能数据
+    // Get skill data
     app.get('/api/skill/:uid', (req, res) => {
         const uid = parseInt(req.params.uid);
         const skillData = userDataManager.getUserSkillData(uid);
@@ -1091,7 +1091,7 @@ async function main() {
         });
     });
 
-    // 历史数据概览
+    // History data overview
     app.get('/api/history/:timestamp/summary', async (req, res) => {
         const { timestamp } = req.params;
         const historyFilePath = path.join('./logs', timestamp, 'summary.json');
@@ -1120,7 +1120,7 @@ async function main() {
         }
     });
 
-    // 历史数据
+    // History data
     app.get('/api/history/:timestamp/data', async (req, res) => {
         const { timestamp } = req.params;
         const historyFilePath = path.join('./logs', timestamp, 'allUserData.json');
@@ -1149,7 +1149,7 @@ async function main() {
         }
     });
 
-    // 获取历史技能数据
+    // Get history skill data
     app.get('/api/history/:timestamp/skill/:uid', async (req, res) => {
         const { timestamp, uid } = req.params;
         const historyFilePath = path.join('./logs', timestamp, 'users', `${uid}.json`);
@@ -1178,14 +1178,14 @@ async function main() {
         }
     });
 
-    // 下载历史战斗日志数据
+    // Download history battle log data
     app.get('/api/history/:timestamp/download', async (req, res) => {
         const { timestamp } = req.params;
         const historyFilePath = path.join('./logs', timestamp, 'fight.log');
         res.download(historyFilePath, `fight_${timestamp}.log`);
     });
 
-    // 历史数据列表
+    // History data list
     app.get('/api/history/list', async (req, res) => {
         try {
             const data = (await fsPromises.readdir('./logs', { withFileTypes: true }))
@@ -1212,7 +1212,7 @@ async function main() {
         }
     });
 
-    // 设置相关接口
+    // Settings related endpoints
     app.get('/api/settings', async (req, res) => {
         res.json({ code: 0, data: globalSettings });
     });
@@ -1241,7 +1241,7 @@ async function main() {
         logger.info('Server changed, statistics cleared!');
     };
 
-    // WebSocket 连接处理
+    // WebSocket connection handling
     io.on('connection', (socket) => {
         logger.info('WebSocket client connected: ' + socket.id);
 
@@ -1250,7 +1250,7 @@ async function main() {
         });
     });
 
-    // 每100ms广播数据给所有WebSocket客户端
+    // Broadcast data to all WebSocket clients every 100ms
     setInterval(() => {
         if (!isPaused) {
             const userData = userDataManager.getAllUsersData();
@@ -1281,7 +1281,7 @@ async function main() {
         server_port++;
     }
     server.listen(server_port, () => {
-        // 自动用默认浏览器打开网页（跨平台兼容）
+        // Automatically open webpage with default browser (cross-platform compatible)
         const url = 'http://localhost:' + server_port;
         logger.info(`Web Server started at ${url}`);
         logger.info('WebSocket Server started');
@@ -1294,7 +1294,7 @@ async function main() {
             case 'win32': // Windows
                 command = `start ${url}`;
                 break;
-            default: // Linux 和其他 Unix-like 系统
+            default: // Linux and other Unix-like systems
                 command = `xdg-open ${url}`;
                 break;
         }
@@ -1391,7 +1391,7 @@ async function main() {
         return Buffer.from(frameBuffer.subarray(ipPacket.offset, ipPacket.offset + (ipPacket.info.totallen - ipPacket.hdrlen)));
     };
 
-    //抓包相关
+    // Packet capture related
     const eth_queue = [];
     const c = new Cap();
     const device = devices[num].name;
@@ -1458,7 +1458,7 @@ async function main() {
         await tcp_lock.acquire();
         if (current_server !== src_server && current_server !== src_server_re) {
             try {
-                //尝试通过小包识别服务器
+                // Try to identify server through small packets
                 if (buf[4] == 0 && buf[5] == 6) {
                     const data = buf.subarray(10);
                     if (data.length) {
@@ -1484,7 +1484,7 @@ async function main() {
                 }
             } catch (e) {}
             try {
-                //尝试通过登录返回包识别服务器(仍需测试)
+                // Try to identify server through login return packet (still needs testing)
                 if (buf.length === 0x62) {
                     // prettier-ignore
                     const signature = Buffer.from([
@@ -1510,7 +1510,7 @@ async function main() {
                 }
             } catch (e) {}
             try {
-                //尝试通过一个上报的小包识别服务器
+                // Try to identify server through a reported small packet
                 if (buf[4] == 0 && buf[5] == 5) {
                     const data = buf.subarray(10);
                     if (data.length) {
@@ -1539,7 +1539,7 @@ async function main() {
             return;
         }
         // logger.debug(`packet seq ${tcpPacket.info.seqno >>> 0} size ${buf.length} expected next seq ${((tcpPacket.info.seqno >>> 0) + buf.length) >>> 0}`);
-        //这里已经是识别到的服务器的包了
+        // This is already a packet from the identified server
         if (tcp_next_seq === -1) {
             logger.error('Unexpected TCP capture error! tcp_next_seq is -1');
             if (buf.length > 4 && buf.readUInt32BE() < 0x0fffff) {
@@ -1588,7 +1588,7 @@ async function main() {
         }
     })();
 
-    //定时清理过期的IP分片缓存
+    // Regularly clear expired IP fragment cache
     setInterval(async () => {
         const now = Date.now();
         let clearedFragments = 0;
@@ -1611,8 +1611,8 @@ async function main() {
 }
 
 if (!zlib.zstdDecompressSync) {
-    // 之前总是有人用旧版本nodejs，不看警告还说数据不准，现在干脆不让旧版用算了
-    // 还有人对着开源代码写闭源，不遵守许可就算了，还要诋毁开源，什么人啊这是
+    // Previously, some people always used old versions of Node.js, ignored warnings and still complained about inaccurate data, now we simply don't allow old versions to be used
+    // Some people also write closed-source code based on open-source code, not only do they not comply with the license, but they also disparage open-source, what kind of people are these
     warnAndExit('zstdDecompressSync is not available! Please update your Node.js!');
 }
 

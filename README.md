@@ -1,157 +1,155 @@
-# 星痕共鸣实时战斗数据统计工具 (Star Resonance Damage Counter)
+# Blue Protocol: Star Resonance Real-time Combat Data Counter
 
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-brightgreen.svg)](https://www.gnu.org/licenses/agpl-3.0.txt)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-brightgreen.svg)](https://www.gnu.org/licenses/agpl-3.txt)
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-green.svg)](https://nodejs.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-10.13.1-orange.svg)](https://pnpm.io/)
 
-一个用于《星痕共鸣》游戏的实时战斗数据统计工具，通过网络抓包技术实时分析战斗数据，提供伤害统计、DPS 计算等功能。
+A real-time combat data statistics tool for the "Blue Protocol: Star Resonance" game, which analyzes combat data in real-time through network packet capture technology, providing damage statistics, DPS calculations, and other features.
 
-该工具的数据准确性已经经过多次实际战斗验证，在网络环境稳定的情况下暂未发现数据丢失的问题。
+The accuracy of this tool has been verified through multiple actual combat tests, and no data loss issues have been found under stable network conditions.
 
-该工具无需修改游戏客户端，不违反游戏服务条款。该工具旨在帮助玩家更好地理解战斗数据，减少无效提升，提升游戏体验。使用该工具前，请确保不会将数据结果用于战力歧视等破坏游戏社区环境的行为。
+This tool does not require modification of the game client and does not violate the game's terms of service. The tool aims to help players better understand combat data, reduce ineffective improvements, and enhance gaming experience. Before using this tool, please ensure that the data results will not be used for combat power discrimination or other behaviors that damage the game community environment.
 
-[介绍视频](https://www.bilibili.com/video/BV1T4hGzGEeX/)
+[Introduction Video](https://www.bilibili.com/video/BV1T4hGzGEeX/)
 
-## ✨ 功能特性
+This project has been translated with some degree of error. There are still a few aspects of the project that have not been translated, such as monster names, which can be modified in monsters_name_en.json if you would like to contribute.
 
-- 🎯 **实时伤害统计** - 实时捕获并统计战斗中的伤害数据
-- 📊 **DPS 计算** - 提供瞬时 DPS 和总体 DPS 计算
-- 🎲 **详细分类** - 区分普通伤害、暴击伤害、幸运伤害等类型
-- 🌐 **Web 界面** - 提供美观的实时数据展示界面，折线图展示
-- 🌙 **主题切换** - 支持日间/夜间模式切换
-- 🔄 **自动刷新** - 数据实时更新，无需手动刷新
-- 📈 **统计分析** - 暴击率、幸运率等详细统计信息
+## ✨ Features
 
-## 🚀 快速开始
+- 🎯 **Real-time Damage Statistics** - Real-time capture and statistics of combat damage data
+- 📊 **DPS Calculation** - Provides instantaneous DPS and overall DPS calculations
+- 🎲 **Detailed Classification** - Distinguishes between normal damage, critical damage, lucky damage, and other types
+- 🌐 **Web Interface** - Provides a beautiful real-time data display interface with line charts
+- 🌙 **Theme Switching** - Supports day/night mode switching
+- 🔄 **Auto Refresh** - Data updates in real-time without manual refresh
+- 📈 **Statistical Analysis** - Detailed statistics such as critical hit rate and lucky rate
 
-### 一键使用
+## 🚀 Quick Start
 
-前往 [GitHub Actions 页面](https://github.com/dmlgzs/StarResonanceDamageCounter/actions) 下载最新自动打包版本。
+### One-Click Usage
 
-前往 [Release 页面](https://github.com/dmlgzs/StarResonanceDamageCounter/releases) 下载发布版本。
+Go to [Release page](https://github.com/KarmaPanda/StarResonanceDamageCounter/releases) to download the release version.
 
-前往 [夸克网盘](https://pan.quark.cn/s/89c4795e0751) 下载发布版本。
+### Manual Compilation
 
-### 手动编译
-
-#### 前置要求
+#### Prerequisites
 
 - **Node.js** >= 22.15.0
 - **pnpm** >= 10.13.1
-- **WinPcap/Npcap** (网络抓包驱动)
-- **Visual Studio Build Tools** (编译依赖)
-  - 可通过 [Visual Studio Installer](https://visualstudio.microsoft.com/visual-cpp-build-tools/) 安装
-  - 选择“C++ 生成工具”工作负载
-- **Python** 3.10 (编译依赖)
-  - 可通过 [Python 官网](https://www.python.org/downloads/) 下载并安装
-  - 确保 Python 添加到系统 PATH 中
+- **WinPcap/Npcap** (Network packet capture driver)
+- **Visual Studio Build Tools** (Compilation dependency)
+  - Can be installed through [Visual Studio Installer](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+  - Select "C++ build tools" workload
+- **Python** 3.10 (Compilation dependency)
+  - Can be downloaded and installed from [Python official website](https://www.python.org/downloads/)
+  - Ensure Python is added to system PATH
 
-#### 安装步骤
+#### Installation Steps
 
-1. **克隆仓库**
+1. **Clone Repository**
 
    ```bash
    git clone https://github.com/dmlgzs/StarResonanceDamageCounter.git
    cd StarResonanceDamageCounter
    ```
 
-2. **安装依赖**
+2. **Install Dependencies**
 
    ```bash
    corepack enable
    pnpm install
    ```
 
-3. **安装 WinPcap/Npcap**
-   - 下载并安装 [Npcap](https://nmap.org/npcap/) 或 [WinPcap](https://www.winpcap.org/)（推荐 Npcap）
-   - 确保安装时选择了“WinPcap API-compatible mode”
+3. **Install WinPcap/Npcap**
+   - Download and install [Npcap](https://nmap.org/npcap/) or [WinPcap](https://www.winpcap.org/) (Npcap recommended)
+   - Ensure "WinPcap API-compatible mode" is selected during installation
 
-4. **运行**
+4. **Run**
 
    ```bash
    node server.js
    ```
 
-   运行后将提示你：
-   - 选择用于抓包的网络设备（可通过控制面板查看网卡信息）
-   - 选择日志等级（`info`：基础信息，`debug`：详细日志）
+   After running, you will be prompted to:
+   - Select the network device for packet capture (you can check network adapter information through Control Panel)
+   - Select log level (`info`: basic information, `debug`: detailed logs)
 
-   你也可以通过命令行参数直接指定：
+   You can also specify directly through command line parameters:
 
    ```bash
    node server.js <device_number> <log_level>
    ```
 
-   或使用自动检测模式（推荐）：
+   Or use auto-detection mode (recommended):
 
    ```bash
    node server.js auto info
    ```
 
-   自动检测模式会：
-   - 智能识别物理网卡，排除虚拟网卡（如 ZeroTier、VMware 等）
-   - 分析 3 秒网络流量，自动选择最活跃的网卡
-   - 无流量时回退到路由表方法
+   Auto-detection mode will:
+   - Intelligently identify physical network adapters, excluding virtual adapters (such as ZeroTier, VMware, etc.)
+   - Analyze network traffic for 3 seconds and automatically select the most active adapter
+   - Fall back to routing table method when no traffic is detected
 
-   手动指定示例：
+   Manual specification example:
 
    ```bash
    node server.js 4 info
    ```
 
-### 使用方法
+### Usage Instructions
 
-1. **选择网络设备**
-   - 启动程序后，会显示可用的网络设备列表
-   - 输入对应设备在程序输出的列表里显示的数字编号（通常选择主网卡）
-   - 可以前往控制面板或者系统设置查找使用的网卡
+1. **Select Network Device**
+   - After starting the program, a list of available network devices will be displayed
+   - Enter the corresponding device number shown in the program output list (usually select the main network adapter)
+   - You can check the network adapter information through Control Panel or system settings
 
-2. **设置日志级别**
-   - 选择日志级别：`info` 或 `debug`
-   - 推荐使用 `info` 级别以减少日志输出
+2. **Set Log Level**
+   - Choose log level: `info` or `debug`
+   - Recommended to use `info` level to reduce log output
 
-3. **启动游戏**
-   - 程序会自动检测游戏服务器连接
-   - 当检测到游戏服务器时，会输出服务器信息，并开始统计数据
+3. **Start Game**
+   - The program will automatically detect game server connections
+   - When a game server is detected, server information will be output and data statistics will begin
 
-4. **查看数据**
-   - 打开浏览器访问：`http://localhost:8989`
-   - 实时查看战斗数据统计
+4. **View Data**
+   - Open browser and visit: `http://localhost:8989`
+   - View real-time combat data statistics
 
-## 📱 Web 界面功能
+## 📱 Web Interface Features
 
-### 数据展示
+### Data Display
 
-- **角色 ID** - 玩家角色标识
-- **总伤害/治疗** - 累计造成的总伤害/治疗量
-- **伤害分类** - 纯暴击、纯幸运、暴击幸运等详细分类
-- **暴击率/幸运率** - 战斗中的暴击和幸运触发概率
-- **瞬时 DPS/HPS** - 当前秒的伤害/治疗输出
-- **最大瞬时** - 历史最高瞬时输出记录
-- **总 DPS/HPS** - 整体平均输出效率
+- **Character ID** - Player character identifier
+- **Total Damage/Healing** - Cumulative total damage/healing dealt
+- **Damage Classification** - Detailed categories like pure critical, pure lucky, critical lucky, etc.
+- **Critical Rate/Lucky Rate** - Critical hit and lucky trigger probability in combat
+- **Instantaneous DPS/HPS** - Current second's damage/healing output
+- **Maximum Instantaneous** - Historical highest instantaneous output record
+- **Total DPS/HPS** - Overall average output efficiency
 
-### 操作功能
+### Operation Features
 
-- **清空数据** - 重置所有统计数据
-- **主题切换** - 在日间/夜间模式间切换
-- **自动刷新** - 每 100ms 自动更新数据
+- **Clear Data** - Reset all statistical data
+- **Theme Switch** - Switch between day/night modes
+- **Auto Refresh** - Automatically update data every 100ms
 
-## 🛠️ 技术架构
+## 🛠️ Technical Architecture
 
-### 核心依赖
+### Core Dependencies
 
-- **[cap](https://github.com/mscdex/cap)** - 网络数据包捕获
-- **[express](https://expressjs.com/)** - Web 服务器框架
-- **[protobufjs](https://github.com/protobufjs/protobuf.js)** - Protocol Buffers 解析
-- **[winston](https://github.com/winstonjs/winston)** - 日志管理
+- **[cap](https://github.com/mscdex/cap)** - Network packet capture
+- **[express](https://expressjs.com/)** - Web server framework
+- **[protobufjs](https://github.com/protobufjs/protobuf.js)** - Protocol Buffers parsing
+- **[winston](https://github.com/winstonjs/winston)** - Log management
 
-## 📡 API 接口
+## 📡 API Endpoints
 
 ### GET /api/data
 
-获取实时战斗数据统计
+Get real-time combat data statistics
 
-**响应示例：**
+**Response Example:**
 
 ```json
 {
@@ -202,9 +200,9 @@
 
 ### GET /api/clear
 
-清空所有统计数据
+Clear all statistical data
 
-**响应示例：**
+**Response Example:**
 
 ```json
 {
@@ -215,9 +213,9 @@
 
 ### GET /api/enemies
 
-获取敌方数据
+Get enemy data
 
-**响应示例：**
+**Response Example:**
 
 ```json
 {
@@ -232,60 +230,65 @@
 }
 ```
 
-## 其余 API 可在[源码](server.js)中查看
+## Other APIs can be viewed in the [source code](server.js)
 
-## 🔧 故障排除
+## 🔧 Troubleshooting
 
-### 常见问题
+### Common Issues
 
-1. **无法检测到游戏服务器**
-   - 检查网络设备选择是否正确
-   - 确认游戏正在运行且已连接服务器
-   - 尝试前往同一张地图的非人群密集处
+1. **Cannot detect game server**
+   - Check if network device selection is correct
+   - Confirm the game is running and connected to server
+   - Try going to less crowded areas on the same map
 
-2. **Web 界面无法访问**
-   - 检查端口 8989 是否被占用
-   - 确认防火墙设置允许本地连接
+2. **Web interface cannot be accessed**
+   - Check if port 8989 is occupied
+   - Confirm firewall settings allow local connections
 
-3. **数据统计异常**
-   - 检查日志输出是否有错误信息
-   - 尝试重启程序重新捕获
+3. **Data statistics abnormal**
+   - Check log output for error messages
+   - Try restarting the program to recapture
 
-4. **cap 模块编译错误**
-   - 确保已安装 Visual Studio Build Tools 和 Python
-   - 确认 Node.js 版本符合要求
+4. **cap module compilation error**
+   - Ensure Visual Studio Build Tools and Python are installed
+   - Confirm Node.js version meets requirements
 
-5. **启动程序立马自动退出**
-   - 确保已安装 Npcap
-   - 确认网络设备选择输入了正确的数字编号
+5. **Program exits immediately after startup**
+   - Ensure Npcap is installed
+   - Confirm network device selection entered correct number
 
-## 📄 许可证
+## 📄 License
 
 [![](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](LICENSE)
 
-本项目采用 [GNU AFFERO GENERAL PUBLIC LICENSE version 3](LICENSE) 许可证。
+This project is licensed under [GNU AFFERO GENERAL PUBLIC LICENSE version 3](LICENSE).
 
-使用本项目即表示您同意遵守该许可证的条款。
+Using this project indicates that you agree to comply with the terms of this license.
 
-### 衍生软件相关
+### Derivative Software Related
 
-- 若修改源代码并重新发布，必须在显著位置注明本项目。
-- 若参考内部实现（如服务器识别、协议解析、数据处理等）发布另一个项目，必须在显著位置注明本项目。
+- If you modify the source code and redistribute it, you must prominently credit this project.
+- If you reference internal implementations (such as server identification, protocol parsing, data processing, etc.) to publish another project, you must prominently credit this project.
 
-如果您不认可本许可和附加条款，请不要使用本项目或查阅相关代码。
+If you do not agree with this license and additional terms, please do not use this project or view the related code.
 
-## 👥 贡献
+## 👥 Contributing
 
-欢迎提交 Issue 和 Pull Request 来改进项目！
+Welcome to submit Issues and Pull Requests to improve the project!
 
-### 贡献者名单
+### Contributors
 
-[![Contributors](https://contrib.rocks/image?repo=dmlgzs/StarResonanceDamageCounter)](https://github.com/dmlgzs/StarResonanceDamageCounter/graphs/contributors "Contributors")
+[![Contributors](https://contrib.rocks/image?repo=KarmaPanda/StarResonanceDamageCounter)](https://github.com/KarmaPanda/StarResonanceDamageCounter/graphs/contributors "Contributors")
 
-## ⭐ 支持
 
-如果这个项目对您有帮助，请给它一个 Star ⭐
+### Additional Note
+
+This project has been forked and translated by [KarmaPanda](https://github.com/KarmaPanda). Most of the code remains original to the 3.31 release of the original program, with slight modifications for translation & QOL purposes.
+
+## ⭐ Support
+
+If this project is helpful to you, please give it a Star ⭐
 
 ---
 
-**免责声明**：本工具仅用于游戏数据分析学习目的，不得用于任何违反游戏服务条款的行为。使用者需自行承担相关风险。项目开发者不对任何他人使用本工具的恶意战力歧视行为负责。请在使用前确保遵守游戏社区的相关规定和道德标准。
+**Disclaimer**: This tool is for game data analysis and learning purposes only, and must not be used for any behavior that violates the game's terms of service. Users must bear the related risks themselves. The project developers are not responsible for any malicious combat power discrimination behavior by others using this tool. Please ensure compliance with relevant regulations and moral standards of the gaming community before use.
